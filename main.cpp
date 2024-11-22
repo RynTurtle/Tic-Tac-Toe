@@ -9,6 +9,8 @@
 using namespace std;
 
 
+
+// global variables 
 const int ROWS = 3; // number of rows
 const int COLS = 3; // number of columns 
 char grid[ROWS][COLS]; // the grid of naughts and crosses 
@@ -16,43 +18,59 @@ char input;
 int current_player = 1;
 int total_squares;
 
+string welcome_message =
+R"(
+    XOXOXOXOXOXOXOXOXOXOXOXOXOXOXOXOXO
+    O+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-X
+    X Welcome to noughts and crosses O
+    O+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-X
+    X       1. Start new game        O
+    O       2. Learn how to play     X
+    X       3. View stats            O
+    O       4. Quit game             X
+    X+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-O
+    OXOXOXOXOXOXOXOXOXOXOXOXOXOXOXOXOX
+)";
+
+
+
+string game_message =
+R"(
+    XOXOXOXOXOXOXOXOXOXOXOXOXOXOXOXOXO
+    O+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-X
+    X          New game              O
+    O+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-X
+    X       1. 2 Players             O
+    O       2. Against Cross-o-Bot   X
+    X       3. Return to main menu   O
+    O+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-X
+	XOXOXOXOXOXOXOXOXOXOXOXOXOXOXOXOXO
+)";
+
+
+/*
+
+	XOXOXOXOXOXOXOXOXOXOXOXOXOXOXOXOXO
+	O+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-X
+	X		Player 1: Ryan           O 15 character limit on username
+	O+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-X
+				 |     |
+			  X  |  O  |  X
+			_____|_____|_____
+				 |     |
+			  O  |  O  |  X
+			_____|_____|_____
+				 |     |
+			  X  |  O  |  O
+				 |     |
+
+
+*/
+
+
+
 // map within a map containing the usernames player1:name1, player2:name2
 std::unordered_map<int, std::string> player_usernames;
-
-
-/*
-	todo resize text based on terminal?
-	when a winner has been found select the 3 aligning ones and highlight the background colour to yellow or something like that
-	when a player wins play a celebration sound
-*/
-
-
-
-/*
-(top to bottom) = column
-						x|x|x
-						-|-|-
-(left to right = row)	o|o|x
-						-|-|-
-						o|x|x
-
-
-void Loading() {
-	// every second add a * for a visual queue showing a waiting status for the user
-	for (int i = 0; i < 10; i++) {
-		if (i < 5) {
-			Sleep(1000);
-			cout << "*";
-		}
-		else if (i == 5)
-			Sleep(1000);
-	// removes the previous 5 *'s
-		if (i >= 5)
-			cout << "\b \b";
-	}
-}
-
-*/
 
 
 void clear_table() {
@@ -127,11 +145,14 @@ void DisplayGrid() {
 		for (int col = 0; col < COLS; col++) {
 			if (grid[row][col] == 'x')
 				whole_grid.append(coloured_text("red", "x"));
+
 			else if (grid[row][col] == 'o')
 				whole_grid.append(coloured_text("blue", "o"));
+
 			else (whole_grid.append(" "));
 
-			if (col < 2) whole_grid.append("|"); // add the  boarder on the first two colums 
+			// add the  boarder on the first two colums 
+			if (col < 2) whole_grid.append("|"); 
 		}
 	}
 
@@ -168,7 +189,6 @@ bool FillSquare(int row, int col) {
 		// squares already filled 
 		return false; 
 	}
-
 	if (current_player == 1) {
 		grid[row][col] = 'x';
 		total_squares += 1; 
@@ -181,8 +201,6 @@ bool FillSquare(int row, int col) {
 
 	};
 
-
-
 	if (total_squares == ROWS * COLS) {
 		// show new grid and break the loop 
 		system("cls");
@@ -192,17 +210,7 @@ bool FillSquare(int row, int col) {
 	}
 
 	return true;
-	
-
 }
-
-
-void TestBoard() {
-	grid[0][0] = 'x'; grid[0][1] = 'o'; grid[0][2] = 'x';
-	grid[1][0] = 'x'; grid[1][1] = 'x'; grid[1][2] = 'o';
-	grid[2][0] = 'x'; grid[2][1] = 'o'; grid[2][2] = 'x';
-}
-
 
 bool check_winner(){
 	string check = "";
@@ -252,7 +260,7 @@ bool check_winner(){
 		}
 	}
 
-	
+	// winner_position = the winning line coordinates 
 
 	return false; 
 }
@@ -348,24 +356,13 @@ int StartGame() {
 
 
 
-// play against robot 
-// if you lose then play https://www.youtube.com/watch?v=NT4S8A7Vcsk
-// when updating stats have seperate section against the robot 
-
-// human scores, robot scores (wins and losses of user)
 
 int main() {
-	//TestBoard();
 	do {
 		clear_table();
 		total_squares = 0;
 
-		// main menu 
-		cout << "Welcome to noughts and crosses!!" << endl;
-		cout << "1. Start new game " << endl;
-		// 2. learn how to play
-		cout << "2. View stats " << endl;
-		cout << "3. Quit game" << endl;
+		cout << welcome_message << endl;
 		cin >> input;
 		system("cls");
 
@@ -373,10 +370,25 @@ int main() {
 			StartGame();
 
 		}
-		else if (input == '2') {
+		else if (input == '3') {
 			ViewStats();
 		}
 
-	} while (input != '3');
+	} while (input != '4');
 }
 
+
+
+
+/*
+	todo resize text based on terminal?
+	when a winner has been found select the 3 aligning ones and highlight the background colour to yellow or something like that
+	when a player wins play a celebration sound
+	play against robot
+	if you lose then play https://www.youtube.com/watch?v=NT4S8A7Vcsk
+	when updating stats have seperate section against the robot
+
+	human scores, robot scores (wins and losses of user)
+
+
+*/
