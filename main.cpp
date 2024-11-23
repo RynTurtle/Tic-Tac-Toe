@@ -48,25 +48,30 @@ R"(
 )";
 
 
-/*
 
+string grid_display =
+R"(
 	XOXOXOXOXOXOXOXOXOXOXOXOXOXOXOXOXO
-	O+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-X
-	X		Player 1: Ryan           O 15 character limit on username
-	O+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-X
-				 |     |
-			  X  |  O  |  X
-			_____|_____|_____
-				 |     |
-			  O  |  O  |  X
-			_____|_____|_____
-				 |     |
-			  X  |  O  |  O
-				 |     |
+	O+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+ X
+	X         Player 1: Ryan         O
+	O+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+ X 
+	X                                O
+	O            |     |             X
+	X        r   |  r  |  r          O
+	O       _____|_____|_____        X
+	X            |     |             O
+	O        r   |  r  |  r          X
+	X       _____|_____|_____        O
+	O            |     |             X
+	X        r   |  r  |  r          O
+	O            |     |             X
+	X                                O
+	O+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+ X
+	XOXOXOXOXOXOXOXOXOXOXOXOXOXOXOXOXO
 
 
-*/
-
+)";
+ 
 
 
 // map within a map containing the usernames player1:name1, player2:name2
@@ -134,39 +139,73 @@ string DisplayControls() {
 
 
 void DisplayGrid() {
+	string whole_grid = "";
+
+
+	whole_grid += "XOXOXOXOXOXOXOXOXOXOXOXOXOXOXOXOX\n";
+	whole_grid += "O+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+O\nX";
+	
+	string player_line = "         Player " + std::to_string(current_player) + ": " + player_usernames[current_player];
+
+	if (current_player == 1) {
+		whole_grid += coloured_text("red", player_line);
+	}
+	else { whole_grid += coloured_text("blue", player_line); }
+
+
+	int spaces_needed = 12 - player_usernames[current_player].length();
+	for (int i = 0; i < spaces_needed; i++) {
+		whole_grid += " ";
+	}
+	whole_grid += "X\n";
+	whole_grid += "O+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+O\n";
+
+
+
+
+	cout << whole_grid;
+	//whole_grid +=  "O\n";
+
+}
+	/*
+	int spaces_needed = 15 - player_usernames[current_player].length();
+	for (int i = 0; i < spaces_needed; i++) {
+		whole_grid += " ";
+	}
+	cout << "O\n";
+	cout << "O+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+X\n";
+	*/
+
 	// black borders white background, text red for x, blue for o  
 
-	string whole_grid = "";
+
+	/*
 	for (int row = 0; row < ROWS; row++) {
-		// on each row add a newline and the boarder lines
-		whole_grid.append("\n");
-		if (row > 0) whole_grid.append("-|-|-\n");
+
 
 		for (int col = 0; col < COLS; col++) {
 			if (grid[row][col] == 'x')
-				whole_grid.append(coloured_text("red", "x"));
+				cout << "" << endl;
+			//whole_grid.append(coloured_text("red", "x"));
 
 			else if (grid[row][col] == 'o')
-				whole_grid.append(coloured_text("blue", "o"));
-
-			else (whole_grid.append(" "));
-
-			// add the  boarder on the first two colums 
-			if (col < 2) whole_grid.append("|"); 
+				//whole_grid.append(coloured_text("blue", "o"));
+				cout << "" << endl;
+			//else (whole_grid.append(" "));
 		}
 	}
+	*/
+	//cout << "-----" << endl;
+	//if (current_player == 1) {
+	//	cout << coloured_text("red", "Player 1: " + player_usernames[1]) << endl;;
+	//}
+	//else cout << coloured_text("blue", "player 2: " + player_usernames[2]) << endl;;
+	//cout << "-----" << endl;
 
-	cout << "-----" << endl;
-	if (current_player == 1) {
-		cout << coloured_text("red", "Player 1: " + player_usernames[1]) << endl;;
-	}
-	else cout << coloured_text("blue", "player 2: " + player_usernames[2]) << endl;;
-	cout << "-----" << endl;
-
-	cout << whole_grid + "\n";
+	//cout << grid_display + "\n";
 
 
-}
+
 
 void winner_sound() {
 	cout << coloured_text("green", "congratulations " + player_usernames[current_player] + " you have won!!! ") << endl;
@@ -320,17 +359,17 @@ void Write_stats() {
 
 int StartGame() {
 	while (true) {
-		if (player_usernames[1].length() > 15 || player_usernames[1] == "") {
+		if (player_usernames[1].length() > 12 || player_usernames[1] == "") {
 			cout << "Player 1 username = ";
 			cin >> player_usernames[1];
 		}
 
-		if (player_usernames[2].length() > 15 || player_usernames[2] == "") {
+		if (player_usernames[2].length() > 12 || player_usernames[2] == "") {
 			cout << "Player 2 username = ";
 			cin >> player_usernames[2];
 		}
 
-		if (player_usernames[1].length() < 15 && player_usernames[2].length() < 15) {
+		if (player_usernames[1].length() < 12 && player_usernames[2].length() < 12) {
 			break;
 		}
 
@@ -365,10 +404,20 @@ int StartGame() {
 
 
 
+void TestBoard() {
+	grid[0][0] = 'x'; grid[0][1] = 'o'; grid[0][2] = 'x';
+	grid[1][0] = 'x'; grid[1][1] = 'x'; grid[1][2] = 'o';
+	grid[2][0] = 'x'; grid[2][1] = 'o'; grid[2][2] = 'x';
+}
 
 
 
 int main() {
+	player_usernames[1] = "Ryan";
+	TestBoard();
+	DisplayGrid();
+}
+	/*
 	do {
 		clear_table();
 		total_squares = 0;
@@ -388,6 +437,7 @@ int main() {
 	} while (input != '4');
 }
 
+*/
 
 
 
