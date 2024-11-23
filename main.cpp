@@ -54,7 +54,7 @@ R"(
 	XOXOXOXOXOXOXOXOXOXOXOXOXOXOXOXOXO
 	O+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+ X
 	X         Player 1: Ryan         O
-	O+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+ X 
+	O+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+ X
 	X                                O
 	O            |     |             X
 	X        r   |  r  |  r          O
@@ -141,17 +141,15 @@ string DisplayControls() {
 void DisplayGrid() {
 	string whole_grid = "";
 
-
 	whole_grid += "XOXOXOXOXOXOXOXOXOXOXOXOXOXOXOXOX\n";
 	whole_grid += "O+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+O\nX";
 	
 	string player_line = "         Player " + std::to_string(current_player) + ": " + player_usernames[current_player];
-
+	// changes user colour line based on if they are player 1 or 2 (x or o)
 	if (current_player == 1) {
 		whole_grid += coloured_text("red", player_line);
 	}
 	else { whole_grid += coloured_text("blue", player_line); }
-
 
 	int spaces_needed = 12 - player_usernames[current_player].length();
 	for (int i = 0; i < spaces_needed; i++) {
@@ -159,50 +157,37 @@ void DisplayGrid() {
 	}
 	whole_grid += "X\n";
 	whole_grid += "O+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+O\n";
+	whole_grid += "X            |     |            X\n";
+	whole_grid += "O         " + string(1, grid[0][0]) + "  |  " + string(1, grid[0][1]) + "  | " + string(1, grid[0][2]) + "          O\n";
+	whole_grid += "X       _____|_____|_____       X\n";
+
+	whole_grid += "O            |     |            O\n";
+	whole_grid += "X         " + string(1, grid[1][0]) + "  |  " + string(1, grid[1][1]) + "  | " + string(1, grid[1][2]) + "          X\n";
+	whole_grid += "O       _____|_____|_____       O\n";
+	whole_grid += "X            |     |            X\n";
+
+	whole_grid += "O         " + string(1, grid[2][0]) + "  |  " + string(1, grid[2][1]) + "  | " + string(1, grid[2][2]) + "          O\n";
+	whole_grid += "X            |     |            X\n";
+	whole_grid += "O+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+O\n";
+	whole_grid += "XOXOXOXOXOXOXOXOXOXOXOXOXOXOXOXOX\n";
 
 
-
-
-	cout << whole_grid;
-	//whole_grid +=  "O\n";
-
-}
-	/*
-	int spaces_needed = 15 - player_usernames[current_player].length();
-	for (int i = 0; i < spaces_needed; i++) {
-		whole_grid += " ";
-	}
-	cout << "O\n";
-	cout << "O+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+X\n";
-	*/
-
-	// black borders white background, text red for x, blue for o  
-
-
-	/*
-	for (int row = 0; row < ROWS; row++) {
-
-
-		for (int col = 0; col < COLS; col++) {
-			if (grid[row][col] == 'x')
-				cout << "" << endl;
-			//whole_grid.append(coloured_text("red", "x"));
-
-			else if (grid[row][col] == 'o')
-				//whole_grid.append(coloured_text("blue", "o"));
-				cout << "" << endl;
-			//else (whole_grid.append(" "));
+	// loop through table and add the colours for X/O 
+	for (std::string::size_type i = 0; i < whole_grid.size(); ++i) {
+		// since theres an XO pattern around the game table I need to check if the surrounding characters have empty spaces on either side.
+		if (whole_grid[i] == 'X' && i != 0 && whole_grid[i - 1] == ' ' && whole_grid[i + 1] == ' ') {
+			whole_grid.replace(i, 1, coloured_text("red", "X"));
+		}
+		if (whole_grid[i] == 'O' && i != 0 && whole_grid[i - 1] == ' ' && whole_grid[i + 1] == ' ') {
+			whole_grid.replace(i, 1, coloured_text("blue", "O"));
 		}
 	}
-	*/
-	//cout << "-----" << endl;
-	//if (current_player == 1) {
-	//	cout << coloured_text("red", "Player 1: " + player_usernames[1]) << endl;;
-	//}
-	//else cout << coloured_text("blue", "player 2: " + player_usernames[2]) << endl;;
-	//cout << "-----" << endl;
 
-	//cout << grid_display + "\n";
+	cout << whole_grid << endl;
+
+	}
+
+
 
 
 
@@ -405,9 +390,9 @@ int StartGame() {
 
 
 void TestBoard() {
-	grid[0][0] = 'x'; grid[0][1] = 'o'; grid[0][2] = 'x';
-	grid[1][0] = 'x'; grid[1][1] = 'x'; grid[1][2] = 'o';
-	grid[2][0] = 'x'; grid[2][1] = 'o'; grid[2][2] = 'x';
+	grid[0][0] = 'X'; grid[0][1] = 'O'; grid[0][2] = 'X';
+	grid[1][0] = 'X'; grid[1][1] = 'X'; grid[1][2] = 'O';
+	grid[2][0] = 'X'; grid[2][1] = 'O'; grid[2][2] = 'X';
 }
 
 
