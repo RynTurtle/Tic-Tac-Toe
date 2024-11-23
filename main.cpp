@@ -318,7 +318,29 @@ void check_input() {
 }
 
 
+/*
 
+{
+	"vs-bots": {
+		"ryan": {
+			"wins": 5,
+				"losses" : 10,
+				"draws" : 3
+		},
+			"next-user" : {}
+	},
+
+		"vs-humans": {
+		"ryan": {
+			"wins": 5,
+				"losses" : 10,
+				"draws" : 3
+		},
+			"next-user" : {}
+	}
+}
+
+/*
 
 
 void ViewStats() {
@@ -329,13 +351,11 @@ void ViewStats() {
 
 
 
+
+// 
 void Write_stats() {
 	/*
-		username | total wins | total losses | KDR (number of wins / deaths)
-		abc | 1 | 3 |
-		123 | 3 | 1 |
-
-		write to .txt file or .json file
+		special message if you have the highest number of wins?
 	*/
 }
 
@@ -413,11 +433,9 @@ int main() {
 /*
 	todo resize text based on terminal?
 	when a winner has been found select the 3 aligning ones and highlight the background colour to yellow or something like that
-	when a player wins play a celebration sound
 	play against robot
 	if you lose then play https://www.youtube.com/watch?v=NT4S8A7Vcsk
 	when updating stats have seperate section against the robot
-
 	human scores, robot scores (wins and losses of user)
 
 
