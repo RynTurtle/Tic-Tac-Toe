@@ -319,11 +319,22 @@ void Write_stats() {
 
 
 int StartGame() {
-	cout << "Player 1 username = ";
-	cin >> player_usernames[1];
-	cout << "Player 2 username = ";
-	cin >> player_usernames[2];
+	while (true) {
+		if (player_usernames[1].length() > 15 || player_usernames[1] == "") {
+			cout << "Player 1 username = ";
+			cin >> player_usernames[1];
+		}
 
+		if (player_usernames[2].length() > 15 || player_usernames[2] == "") {
+			cout << "Player 2 username = ";
+			cin >> player_usernames[2];
+		}
+
+		if (player_usernames[1].length() < 15 && player_usernames[2].length() < 15) {
+			break;
+		}
+
+	}
 	do {// starts the game loop 
 		system("cls"); // clear previous inputs
 
