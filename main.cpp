@@ -185,10 +185,7 @@ void DisplayGrid() {
 
 	cout << whole_grid << endl;
 
-	}
-
-
-
+}
 
 
 
@@ -214,13 +211,13 @@ bool FillSquare(int row, int col) {
 		return false; 
 	}
 	if (current_player == 1) {
-		grid[row][col] = 'x';
+		grid[row][col] = 'X';
 		total_squares += 1; 
 
 	}
 	else if (current_player == 2) {
 
-		grid[row][col] = 'o';
+		grid[row][col] = 'O';
 		total_squares += 1;
 
 	};
@@ -249,7 +246,7 @@ bool check_winner(){
 			// append to check variable 
 			check += grid[row][col];
 			// if theres a match then a winner has been found 
-			if (check == "xxx" || check ==  "ooo") {
+			if (check == "XXX" || check ==  "OOO") {
 				return true;
 			}
 		}
@@ -260,7 +257,7 @@ bool check_winner(){
 		check = "";
 		for (int col = 0; col < COLS; col++) {
 			check += grid[row][col];
-			if (check == "xxx" || check == "ooo") {
+			if (check == "XXX" || check == "OOO") {
 				return true; 
 			}
 		}
@@ -270,7 +267,7 @@ bool check_winner(){
 	check = "";
 	for (int i = 0; i < 3; i++) {
 		check += grid[i][i];
-		if (check == "xxx" || check == "ooo") {
+		if (check == "XXX" || check == "OOO") {
 			return true;
 		}
 	}
@@ -279,7 +276,7 @@ bool check_winner(){
 	check = "";
 	for (int i = 0; i < 3; i++) {
 		check += grid[i][COLS - i - 1]; // 3 - 0 - 1 = (2),  3 - 1 - 1 = (1), 3 - 2 - 1 = (0)
-		if (check == "xxx" || check == "ooo") {
+		if (check == "XXX" || check == "OOO") {
 			return true;
 		}
 	}
@@ -306,6 +303,7 @@ void check_input() {
 		else if (input == 'X' && FillSquare(2, 1) == true) {break; }
 		else if (input == 'C' && FillSquare(2, 2) == true) {break; }
 		else if (input == '2') { cout << DisplayControls();}
+		else if (input == '1') { break; }
 
 		else {
 			// clear previous attempts, show grid and point user in the right direction 
@@ -362,7 +360,7 @@ int StartGame() {
 	do {// starts the game loop 
 		system("cls"); // clear previous inputs
 
-		cout << "1. back to main menu 2. to see controls \nenter controls to start playing" << endl;
+		cout << "1. back to main menu 2. to see controls, enter controls to start playing" << endl;
 		// display the game grid 
 		DisplayGrid();
 		check_input();
@@ -388,21 +386,7 @@ int StartGame() {
 }
 
 
-
-void TestBoard() {
-	grid[0][0] = 'X'; grid[0][1] = 'O'; grid[0][2] = 'X';
-	grid[1][0] = 'X'; grid[1][1] = 'X'; grid[1][2] = 'O';
-	grid[2][0] = 'X'; grid[2][1] = 'O'; grid[2][2] = 'X';
-}
-
-
-
 int main() {
-	player_usernames[1] = "Ryan";
-	TestBoard();
-	DisplayGrid();
-}
-	/*
 	do {
 		clear_table();
 		total_squares = 0;
@@ -422,7 +406,7 @@ int main() {
 	} while (input != '4');
 }
 
-*/
+
 
 
 
