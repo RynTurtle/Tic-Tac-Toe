@@ -163,28 +163,18 @@ void DisplayGrid() {
 	whole_grid += "X\n";
 	whole_grid += "    O+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+O\n";
 	whole_grid += "    X            |     |            X\n";
-	whole_grid += "    O         " + string(1, grid[0][0]) + "  |  " + string(1, grid[0][1]) + "  | " + string(1, grid[0][2]) + "          O\n";
+	whole_grid += "    O         " + string(1, grid[0][0]) + "  |  " + string(1, grid[0][1]) + "  |  " + string(1, grid[0][2]) + "         O\n";
 	whole_grid += "    X       _____|_____|_____       X\n";
 	whole_grid += "    O            |     |            O\n";
-	whole_grid += "    X         " + string(1, grid[1][0]) + "  |  " + string(1, grid[1][1]) + "  | " + string(1, grid[1][2]) + "          X\n";
-	whole_grid += "    O       _____|_____|_____       O\n";
-	whole_grid += "    X            |     |            X\n";
-	whole_grid += "    O         " + string(1, grid[2][0]) + "  |  " + string(1, grid[2][1]) + "  | " + string(1, grid[2][2]) + "          O\n";
+	whole_grid += "    X         " + string(1, grid[1][0]) + "  |  " + string(1, grid[1][1]) + "  |  " + string(1, grid[1][2]) + "         X\n";
+	whole_grid += "    O       _____|_____|_____       O\n";																	  
+	whole_grid += "    X            |     |            X\n";																	  	
+	whole_grid += "    O         " + string(1, grid[2][0]) + "  |  " + string(1, grid[2][1]) + "  |  " + string(1, grid[2][2]) + "         O\n";
 	whole_grid += "    X            |     |            X\n";
 	whole_grid += "    O+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+O\n";
 	whole_grid += "    XOXOXOXOXOXOXOXOXOXOXOXOXOXOXOXOX\n";
 
-
-	// loop through table and add the colours for X/O 
-	for (std::string::size_type i = 0; i < whole_grid.size(); ++i) {
-		// since theres an XO pattern around the game table I need to check if the surrounding characters have empty spaces on either side.
-		if (whole_grid[i] == 'X' && i != 0 && whole_grid[i - 1] == ' ' && whole_grid[i + 1] == ' ') {
-			whole_grid.replace(i, 1, coloured_text("red", "X"));
-		}
-		if (whole_grid[i] == 'O' && i != 0 && whole_grid[i - 1] == ' ' && whole_grid[i + 1] == ' ') {
-			whole_grid.replace(i, 1, coloured_text("blue", "O"));
-		}
-	}
+	// need to figure out how to highlight 3 winning characters and display input x/o's in colour 
 
 	cout << whole_grid << endl;
 
@@ -311,7 +301,7 @@ void check_input() {
 			system("cls");
 
 			DisplayGrid();
-			cout << "character invalid or invalid placement, press 2 to see the controls, gameplay will resume on correct move " << endl;
+			cout << "character invalid or invalid placement. \npress 2 to see the controls. \ngameplay will resume on correct move. " << endl;
 		}
 
 	}
@@ -476,7 +466,6 @@ int main() {
 
 
 /*
-	todo resize text based on terminal?
 	play against robot
 	if you lose then play https://www.youtube.com/watch?v=NT4S8A7Vcsk
 
