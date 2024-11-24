@@ -3,10 +3,15 @@
 #include <unordered_map>
 #include <windows.h>
 #include <mmsystem.h>
+#include <fstream>
+#include "include/nlohmann/json.hpp"
+
+
 // link windm .libs for playsound function to work 
 #pragma comment( lib, "winmm" )
 
 using namespace std;
+using json = nlohmann::json;
 
 
 
@@ -318,45 +323,57 @@ void check_input() {
 }
 
 
-/*
+json read_stats_file() {
+	// reads the file, if it doesnt exist create it, if it does then return the json object 
+	json data;
+	ifstream f("data.json");
 
-{
-	"vs-bots": {
-		"ryan": {
-			"wins": 5,
-				"losses" : 10,
-				"draws" : 3
-		},
-			"next-user" : {}
-	},
+	if (f.fail()) {
+		cout << "Creating stats file." << endl;
+		data["vs-humans"] = json{};
+		data["vs-bot"] = json{};
 
-		"vs-humans": {
-		"ryan": {
-			"wins": 5,
-				"losses" : 10,
-				"draws" : 3
-		},
-			"next-user" : {}
+		ofstream file("data.json");
+		file << data.dump(4); // dump(4) means write it with 4 indents 
+		file.close();
 	}
+	else {
+		f >> data;
+		f.close();
+	}
+
+	return data;
 }
 
-/*
+void View_Stats() {
+	json data = read_stats_file(); 
+	cout << data.dump(4) << endl;
 
-
-void ViewStats() {
-	// displays the username statistics 
-	// displays whatever user is winning in gold  
-	cout << "yo" << endl;
 }
 
 
+void Write_stats(string username, string vs, int wins, int losses, int draws) {
+	json data = read_stats_file();
+	if (data[vs].contains(username)) {
+		// if user exists then add the values instead 
 
+		data[vs][username]["wins"] = data[vs][username]["wins"].get<int>() + wins;
+		data[vs][username]["losses"] = data[vs][username]["losses"].get<int>() + losses;
+		data[vs][username]["draws"] = data[vs][username]["draws"].get<int>() + draws;
+	}
+	else {
+		// create the new json key/values
+		data[vs][username] = json{
+			{"wins", wins},
+			{"losses", losses},
+			{"draws", draws}
+		};
+	}
 
-// 
-void Write_stats() {
-	/*
-		special message if you have the highest number of wins?
-	*/
+	ofstream file("data.json");
+	file << data.dump(4); 
+	file.close();
+
 }
 
 
@@ -407,6 +424,7 @@ int StartGame() {
 
 
 int main() {
+	/*
 	do {
 		clear_table();
 		total_squares = 0;
@@ -424,6 +442,14 @@ int main() {
 		}
 
 	} while (input != '4');
+
+	*/
+
+
+	View_Stats();
+	Write_stats("ryan", "vs-humans", 1, 0, 0);
+	Write_stats("jeff", "vs-bot", 1, 0, 0);
+
 }
 
 
@@ -438,5 +464,13 @@ int main() {
 	when updating stats have seperate section against the robot
 	human scores, robot scores (wins and losses of user)
 
+
+
+
+	classes??
+
+	class bot 
+	class human
+	Class game_logic
 
 */
