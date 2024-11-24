@@ -37,7 +37,7 @@ R"(
     OXOXOXOXOXOXOXOXOXOXOXOXOXOXOXOXOX
 )";
 
-
+	
 
 string game_message =
 R"(
@@ -52,7 +52,7 @@ R"(
 	XOXOXOXOXOXOXOXOXOXOXOXOXOXOXOXOXO
 )";
 
-
+	
 
 string grid_display =
 R"(
@@ -73,11 +73,11 @@ R"(
 	X                                O
 	O+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+ X
 	XOXOXOXOXOXOXOXOXOXOXOXOXOXOXOXOXO
-
-
+	
+    
 )";
- 
 
+	
 
 // map within a map containing the usernames player1:name1, player2:name2
 std::unordered_map<int, std::string> player_usernames;
@@ -122,7 +122,7 @@ string coloured_text(string wanted_colour, string original_text) {
 		// bold high intensity white
 		original_text = "\x1b[1;97m" + original_text;
 	}
-
+ 
 	// ads the reset colour code so it doesnt continue
 	return original_text + "\x1b[0m";
 }
@@ -146,8 +146,8 @@ string DisplayControls() {
 void DisplayGrid() {
 	string whole_grid = "";
 
-	whole_grid += "XOXOXOXOXOXOXOXOXOXOXOXOXOXOXOXOX\n";
-	whole_grid += "O+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+O\nX";
+	whole_grid += "    XOXOXOXOXOXOXOXOXOXOXOXOXOXOXOXOX\n";
+	whole_grid += "    O+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+O\n    X";
 	
 	string player_line = "         Player " + std::to_string(current_player) + ": " + player_usernames[current_player];
 	// changes user colour line based on if they are player 1 or 2 (x or o)
@@ -161,20 +161,18 @@ void DisplayGrid() {
 		whole_grid += " ";
 	}
 	whole_grid += "X\n";
-	whole_grid += "O+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+O\n";
-	whole_grid += "X            |     |            X\n";
-	whole_grid += "O         " + string(1, grid[0][0]) + "  |  " + string(1, grid[0][1]) + "  | " + string(1, grid[0][2]) + "          O\n";
-	whole_grid += "X       _____|_____|_____       X\n";
-
-	whole_grid += "O            |     |            O\n";
-	whole_grid += "X         " + string(1, grid[1][0]) + "  |  " + string(1, grid[1][1]) + "  | " + string(1, grid[1][2]) + "          X\n";
-	whole_grid += "O       _____|_____|_____       O\n";
-	whole_grid += "X            |     |            X\n";
-
-	whole_grid += "O         " + string(1, grid[2][0]) + "  |  " + string(1, grid[2][1]) + "  | " + string(1, grid[2][2]) + "          O\n";
-	whole_grid += "X            |     |            X\n";
-	whole_grid += "O+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+O\n";
-	whole_grid += "XOXOXOXOXOXOXOXOXOXOXOXOXOXOXOXOX\n";
+	whole_grid += "    O+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+O\n";
+	whole_grid += "    X            |     |            X\n";
+	whole_grid += "    O         " + string(1, grid[0][0]) + "  |  " + string(1, grid[0][1]) + "  | " + string(1, grid[0][2]) + "          O\n";
+	whole_grid += "    X       _____|_____|_____       X\n";
+	whole_grid += "    O            |     |            O\n";
+	whole_grid += "    X         " + string(1, grid[1][0]) + "  |  " + string(1, grid[1][1]) + "  | " + string(1, grid[1][2]) + "          X\n";
+	whole_grid += "    O       _____|_____|_____       O\n";
+	whole_grid += "    X            |     |            X\n";
+	whole_grid += "    O         " + string(1, grid[2][0]) + "  |  " + string(1, grid[2][1]) + "  | " + string(1, grid[2][2]) + "          O\n";
+	whole_grid += "    X            |     |            X\n";
+	whole_grid += "    O+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+O\n";
+	whole_grid += "    XOXOXOXOXOXOXOXOXOXOXOXOXOXOXOXOX\n";
 
 
 	// loop through table and add the colours for X/O 
@@ -286,8 +284,6 @@ bool check_winner(){
 		}
 	}
 
-	// winner_position = the winning line coordinates 
-
 	return false; 
 }
 
@@ -397,13 +393,13 @@ int StartGame() {
 	do {// starts the game loop 
 		system("cls"); // clear previous inputs
 
-		cout << "1. back to main menu 2. to see controls, enter controls to start playing" << endl;
+		cout << "    1. back to main menu \n    2. to see controls \n    \x1b[4menter controls to start playing\x1b[0m \n" << endl;
 		// display the game grid 
 		DisplayGrid();
 		check_input();
 		
 		if (check_winner() == true){
-			// show new grid and break the loop 
+			// show new grid and break the loop
 			system("cls");
 			DisplayGrid();
 			winner_sound();
@@ -423,8 +419,39 @@ int StartGame() {
 }
 
 
+
+void change_font_size(int size) {
+	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+	if (hConsole == INVALID_HANDLE_VALUE) {
+		std::cerr << "Error: Unable to get console handle." << std::endl;
+		return;
+	}
+	CONSOLE_FONT_INFOEX cfi;
+	cfi.cbSize = sizeof(CONSOLE_FONT_INFOEX);
+	if (!GetCurrentConsoleFontEx(hConsole, FALSE, &cfi)) {
+		std::cerr << "Error: Unable to retrieve font information." << std::endl;
+		return;
+	}
+
+	cfi.dwFontSize.Y = size; // Font height
+	cfi.dwFontSize.X = 0;    // width is sependant on height 
+	wcscpy_s(cfi.FaceName, L"Consolas"); //  change the font 
+	if (!SetCurrentConsoleFontEx(hConsole, FALSE, &cfi)) {
+		std::cerr << "Error: Unable to set font size." << std::endl;
+	}
+}
+
+
+
+
 int main() {
-	/*
+	change_font_size(30);
+
+	// resize console window 8;rows;cols
+	std::cout << "\x1b[8;30;42t" << std::endl;
+	// line wrapping 
+	std::cout << "\x1b[?7h";  
+
 	do {
 		clear_table();
 		total_squares = 0;
@@ -438,18 +465,10 @@ int main() {
 
 		}
 		else if (input == '3') {
-			ViewStats();
+			View_Stats();
 		}
 
 	} while (input != '4');
-
-	*/
-
-
-	View_Stats();
-	Write_stats("ryan", "vs-humans", 1, 0, 0);
-	Write_stats("jeff", "vs-bot", 1, 0, 0);
-
 }
 
 
@@ -458,17 +477,11 @@ int main() {
 
 /*
 	todo resize text based on terminal?
-	when a winner has been found select the 3 aligning ones and highlight the background colour to yellow or something like that
 	play against robot
 	if you lose then play https://www.youtube.com/watch?v=NT4S8A7Vcsk
-	when updating stats have seperate section against the robot
-	human scores, robot scores (wins and losses of user)
-
-
 
 
 	classes??
-
 	class bot 
 	class human
 	Class game_logic
