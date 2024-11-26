@@ -51,26 +51,24 @@ R"(
 
 string controls_message =
 R"(
-	XOXOXOXOXOXOXOXOXOXOXOXOXOXOXOXOXO
-	O+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+ X
-	X         Player 1: player_name  O
-	O+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+ X
-	X                                O
-	O            |     |             X
-	X        Q   |  W  |  E          O
-	O       _____|_____|_____        X
-	X            |     |             O
-	O        A   |  S  |  D          X
-	X       _____|_____|_____        O
-	O            |     |             X
-	X        Z   |  X  |  C          O
-	O            |     |             X
-	X                                O
-	O+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+ X
-	XOXOXOXOXOXOXOXOXOXOXOXOXOXOXOXOXO
-	
+    XOXOXOXOXOXOXOXOXOXOXOXOXOXOXOXOXO
+    O+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+ X
+    X         Player 1: player_name  O
+    O+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+ X
+    X                                O
+    O            |     |             X
+    X        Q   |  W  |  E          O
+    O       _____|_____|_____        X
+    X            |     |             O
+    O        A   |  S  |  D          X
+    X       _____|_____|_____        O
+    O            |     |             X
+    X        Z   |  X  |  C          O
+    O            |     |             X
+    X                                O
+    O+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+ X
+    XOXOXOXOXOXOXOXOXOXOXOXOXOXOXOXOXO
 )";
-
 
 
 string coloured_text(string wanted_colour, string original_text) {
@@ -182,13 +180,6 @@ class tic_tac_toe {
 			}
 		}
 
-		void Display_Controls() {
-			cout << controls_message << endl;
-			cout << "The aim of noughts and crosses is to match 3 of your symbol (X or O) in a line of 3, the line can be vertical, horizontal or diagonal" << endl;
-			system("cls");
-		}
-
-
 		void Display_Grid() {
 			string whole_grid = "";
 
@@ -206,6 +197,7 @@ class tic_tac_toe {
 			for (int i = 0; i < spaces_needed; i++) {
 				whole_grid += " ";
 			}
+
 			whole_grid += "X\n";
 			whole_grid += "    O+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+O\n";
 			whole_grid += "    X            |     |            X\n";
@@ -220,7 +212,19 @@ class tic_tac_toe {
 			whole_grid += "    O+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+O\n";
 			whole_grid += "    XOXOXOXOXOXOXOXOXOXOXOXOXOXOXOXOX\n";
 
-			// need to figure out how to highlight 3 winning characters and display input x/o's in colour 
+			// loop through table and add the colours for X/O 
+			for (std::string::size_type i = 0; i < whole_grid.size(); ++i) {
+				// since theres an XO pattern around the game table I need to check if the surrounding characters have | on either side.
+				if (i >= 3 && i < whole_grid.size() - 3) { 
+					if ((whole_grid[i - 3] == '|' || whole_grid[i + 3] == '|') && whole_grid[i] == 'X') {
+						whole_grid.replace(i, 1, coloured_text("red", "X"));
+					}
+					if ((whole_grid[i - 3] == '|' || whole_grid[i + 3] == '|') && whole_grid[i] == 'O') {
+						whole_grid.replace(i, 1, coloured_text("blue", "O"));
+					}
+				}
+			}
+
 			cout << whole_grid << endl;
 		}
 
@@ -270,7 +274,7 @@ class tic_tac_toe {
 				else if (input == 'Z' && Fill_Square(2, 0) == true) { break; }
 				else if (input == 'X' && Fill_Square(2, 1) == true) { break; }
 				else if (input == 'C' && Fill_Square(2, 2) == true) { break; }
-				else if (input == '2') { Display_Controls(); }
+				else if (input == '2') { system("cls");  cout << controls_message << endl; system("pause"); break; }
 				else if (input == '1') { break; }
 
 				else {
@@ -439,6 +443,7 @@ class tic_tac_toe {
 
 
 
+//			cout << "The aim of noughts and crosses is to match 3 of your symbol (X or O) in a line of 3, the line can be vertical, horizontal or diagonal" << endl;
 
 
 
@@ -455,6 +460,7 @@ class Game_menu {
 				// User wants to start the game, need to check if they want to play against AI or human 
 				if (input == '1') {
 					system("cls");
+
 					cout << game_message << endl;
 					cin >> input;
 					tic_tac_toe tic_tac;
