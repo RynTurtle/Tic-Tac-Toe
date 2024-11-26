@@ -10,7 +10,12 @@
 #pragma comment( lib, "winmm" )
 using namespace std;
 using json = nlohmann::json;
-
+const int ROWS = 3;
+const int COLS = 3;
+// grid of noughts and crosses 
+char grid[ROWS][COLS];
+int current_player = 1; // 1 or 2 
+int total_squares;
 
 string welcome_message =
 R"(
@@ -64,6 +69,7 @@ R"(
 	XOXOXOXOXOXOXOXOXOXOXOXOXOXOXOXOXO
 	
 )";
+
 
 
 string coloured_text(string wanted_colour, string original_text) {
@@ -124,171 +130,311 @@ void change_font_size(int size) {
 }
 
  
-class tic_tac_toe() {
-	public:
-		const int ROWS = 3; 
-		const int COLS = 3; 
-		// grid of noughts and crosses 
-		char grid[ROWS][COLS]; 
-		char input;
-		int current_player = 1;
-		int total_squares;
-
-		// map within a map containing the usernames player1:name1, player2:name2
-		std::unordered_map<int, std::string> player_usernames;
+class tic_tac_toe {
+public:
+	bool is_against_human;
+	char input;
+	// map within a map containing the usernames player1:name1, player2:name2
+	std::unordered_map<int, std::string> player_usernames;
 
 
-		void clear_table() {
-			// reset the table 
+	void change_player() {
+		if (current_player == 1)
+			current_player = 2;
+		else current_player = 1;
+	}
+
+	void clear_table() {
+		// reset the table 
+		for (int row = 0; row < ROWS; row++) {
+			for (int col = 0; col < COLS; col++) {
+				grid[row][col] = ' ';
+			}
+		}
+	}
+
+	void Display_Controls() {
+		cout << controls_message << endl;
+		cout << "The aim of noughts and crosses is to match 3 of your symbol (X or O) in a line of 3, the line can be vertical, horizontal or diagonal" << endl;
+		system("cls");
+	}
+
+
+	void Display_Grid() {
+		string whole_grid = "";
+
+		whole_grid += "    XOXOXOXOXOXOXOXOXOXOXOXOXOXOXOXOX\n";
+		whole_grid += "    O+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+O\n    X";
+
+		string player_line = "         Player " + std::to_string(current_player) + ": " + player_usernames[current_player];
+		// changes user colour line based on if they are player 1 or 2 (x or o)
+		if (current_player == 1) {
+			whole_grid += coloured_text("red", player_line);
+		}
+		else { whole_grid += coloured_text("blue", player_line); }
+
+		int spaces_needed = 12 - player_usernames[current_player].length();
+		for (int i = 0; i < spaces_needed; i++) {
+			whole_grid += " ";
+		}
+		whole_grid += "X\n";
+		whole_grid += "    O+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+O\n";
+		whole_grid += "    X            |     |            X\n";
+		whole_grid += "    O         " + string(1, grid[0][0]) + "  |  " + string(1, grid[0][1]) + "  |  " + string(1, grid[0][2]) + "         O\n";
+		whole_grid += "    X       _____|_____|_____       X\n";
+		whole_grid += "    O            |     |            O\n";
+		whole_grid += "    X         " + string(1, grid[1][0]) + "  |  " + string(1, grid[1][1]) + "  |  " + string(1, grid[1][2]) + "         X\n";
+		whole_grid += "    O       _____|_____|_____       O\n";
+		whole_grid += "    X            |     |            X\n";
+		whole_grid += "    O         " + string(1, grid[2][0]) + "  |  " + string(1, grid[2][1]) + "  |  " + string(1, grid[2][2]) + "         O\n";
+		whole_grid += "    X            |     |            X\n";
+		whole_grid += "    O+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+O\n";
+		whole_grid += "    XOXOXOXOXOXOXOXOXOXOXOXOXOXOXOXOX\n";
+
+		// need to figure out how to highlight 3 winning characters and display input x/o's in colour 
+		cout << whole_grid << endl;
+	}
+
+
+	bool Fill_Square(int row, int col) {
+		// places the players symbol on the square selected
+		// check if square is empty, if its not then the square has been filled already 
+		// check if all the squares have been placed, if they have then the users have drawn
+		if (grid[row][col] != ' ') {
+			// squares already filled 
+			return false;
+		}
+
+		if (current_player == 1) {
+			grid[row][col] = 'X';
+			total_squares += 1;
+		}
+
+		else if (current_player == 2) {
+			grid[row][col] = 'O';
+			total_squares += 1;
+		};
+
+		if (total_squares == ROWS * COLS) {
+			// show new grid and break the loop 
+			system("cls");
+			Display_Grid();
+			input = '1';
+			cout << "draw!" << endl;
+		}
+
+		return true;
+	}
+
+	void Check_Input() {
+		while (true) { // keep checking input  until its correct 
+			cin >> input;
+			input = toupper(input);
+
+			//  checks if the input is a valid move
+			if (input == 'Q' && Fill_Square(0, 0) == true) { break; }
+			else if (input == 'W' && Fill_Square(0, 1) == true) { break; }
+			else if (input == 'E' && Fill_Square(0, 2) == true) { break; }
+			else if (input == 'A' && Fill_Square(1, 0) == true) { break; }
+			else if (input == 'S' && Fill_Square(1, 1) == true) { break; }
+			else if (input == 'D' && Fill_Square(1, 2) == true) { break; }
+			else if (input == 'Z' && Fill_Square(2, 0) == true) { break; }
+			else if (input == 'X' && Fill_Square(2, 1) == true) { break; }
+			else if (input == 'C' && Fill_Square(2, 2) == true) { break; }
+			else if (input == '2') { Display_Controls(); }
+			else if (input == '1') { break; }
+
+			else {
+				// clear previous attempts, show grid and point user in the right direction 
+				system("cls");
+
+				Display_Grid();
+				cout << "character invalid or invalid placement. \npress 2 to see the controls. \ngameplay will resume on correct move. " << endl;
+			}
+
+		}
+
+	}
+
+	json Read_Stats_File() {
+		// reads the file, if it doesnt exist create it, if it does then return the json object 
+		json data;
+		ifstream f("data.json");
+
+		if (f.fail()) {
+			cout << "Creating stats file." << endl;
+			data["vs-humans"] = json{};
+			data["vs-bot"] = json{};
+
+			ofstream file("data.json");
+			file << data.dump(4); // dump(4) means write it with 4 indents 
+			file.close();
+		}
+		else {
+			f >> data;
+			f.close();
+		}
+		return data;
+	}
+
+	void Write_Stats(string username, string vs, int wins, int losses, int draws) {
+		json data = Read_Stats_File();
+		if (data[vs].contains(username)) {
+			// if user exists then add the values instead 
+
+			data[vs][username]["wins"] = data[vs][username]["wins"].get<int>() + wins;
+			data[vs][username]["losses"] = data[vs][username]["losses"].get<int>() + losses;
+			data[vs][username]["draws"] = data[vs][username]["draws"].get<int>() + draws;
+		}
+		else {
+			// create the new json key/values
+			data[vs][username] = json{
+				{"wins", wins},
+				{"losses", losses},
+				{"draws", draws}
+			};
+		}
+
+		ofstream file("data.json");
+		file << data.dump(4);
+		file.close();
+	}
+
+	void Display_LeaderBoard() {
+		json data = Read_Stats_File();
+		cout << data.dump(4) << endl;
+	}
+
+
+	void Play_Sound(bool is_winner) {
+		string file;
+		string keypress;
+		if (is_winner) {
+			cout << coloured_text("green", "Congratulations " + player_usernames[current_player] + ", you have won!!!") << endl;
+			file = "celebration.wav";
+		}
+		else {
+			file = "loludied.wav";
+		}
+
+		// playing the sound in async mode so it can also handle input at the same time 
+		PlaySoundA(file.c_str(), NULL, SND_FILENAME | SND_ASYNC | SND_LOOP);
+
+		// when a the user enters any key it will
+		cout << "Press any key to stop the music and return to the main menu." << endl;
+		cin >> keypress;
+
+		// stop the sound 
+		PlaySound(NULL, 0, 0);
+	}
+
+	string get_username() {
+		string username;
+		do {
+			cin >> username;
+
+		} while (username.length() > 12 && username == "");
+			return username;
+	}
+
+	bool check_winner() {
+		string check = "";
+		// 0,0 0,1 0,2 
+		// 1,0 1,1 1,2 
+		// 2,0 2,1 2,2 
+		// 
+		// for every colum (top to bottom) check if three characters match 
+		for (int col = 0; col < COLS; col++) {
+			check = ""; // after each column reset the 3 characters
 			for (int row = 0; row < ROWS; row++) {
-				for (int col = 0; col < COLS; col++) {
-					grid[row][col] = ' ';
+				// append to check variable 
+				check += grid[row][col];
+				// if theres a match then a winner has been found 
+				if (check == "XXX" || check == "OOO") {
+					return true;
 				}
 			}
 		}
 
-		void Display_Grid() {
-			string whole_grid = "";
-
-			whole_grid += "    XOXOXOXOXOXOXOXOXOXOXOXOXOXOXOXOX\n";
-			whole_grid += "    O+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+O\n    X";
-
-			string player_line = "         Player " + std::to_string(current_player) + ": " + player_usernames[current_player];
-			// changes user colour line based on if they are player 1 or 2 (x or o)
-			if (current_player == 1) {
-				whole_grid += coloured_text("red", player_line);
+		// now we do the same for rows (left to right) 
+		for (int row = 0; row < ROWS; row++) {
+			check = "";
+			for (int col = 0; col < COLS; col++) {
+				check += grid[row][col];
+				if (check == "XXX" || check == "OOO") {
+					return true;
+				}
 			}
-			else { whole_grid += coloured_text("blue", player_line); }
+		}
 
-			int spaces_needed = 12 - player_usernames[current_player].length();
-			for (int i = 0; i < spaces_needed; i++) {
-				whole_grid += " ";
+		// now we need to check horizontal  0,0 1,1 2,2 its just the same number repeating from 0,3 
+		check = "";
+		for (int i = 0; i < 3; i++) {
+			check += grid[i][i];
+			if (check == "XXX" || check == "OOO") {
+				return true;
 			}
-			whole_grid += "X\n";
-			whole_grid += "    O+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+O\n";
-			whole_grid += "    X            |     |            X\n";
-			whole_grid += "    O         " + string(1, grid[0][0]) + "  |  " + string(1, grid[0][1]) + "  |  " + string(1, grid[0][2]) + "         O\n";
-			whole_grid += "    X       _____|_____|_____       X\n";
-			whole_grid += "    O            |     |            O\n";
-			whole_grid += "    X         " + string(1, grid[1][0]) + "  |  " + string(1, grid[1][1]) + "  |  " + string(1, grid[1][2]) + "         X\n";
-			whole_grid += "    O       _____|_____|_____       O\n";
-			whole_grid += "    X            |     |            X\n";
-			whole_grid += "    O         " + string(1, grid[2][0]) + "  |  " + string(1, grid[2][1]) + "  |  " + string(1, grid[2][2]) + "         O\n";
-			whole_grid += "    X            |     |            X\n";
-			whole_grid += "    O+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+O\n";
-			whole_grid += "    XOXOXOXOXOXOXOXOXOXOXOXOXOXOXOXOX\n";
+		}
 
-			// need to figure out how to highlight 3 winning characters and display input x/o's in colour 
-			cout << whole_grid << endl;
+		// check the other horizontal 0,2, 1,1 2,0 
+		check = "";
+		for (int i = 0; i < 3; i++) {
+			check += grid[i][COLS - i - 1]; // 3 - 0 - 1 = (2),  3 - 1 - 1 = (1), 3 - 2 - 1 = (0)
+			if (check == "XXX" || check == "OOO") {
+				return true;
+			}
+		}
+		return false;
+	}
+
+
+	int Game_Start() {
+		clear_table();
+		total_squares = 0;
+
+		if (is_against_human) {
+			cout << "Player 1 username = ";
+			player_usernames[1] = get_username();
+			cout << "Player 2 username = ";
+			player_usernames[2] = get_username();
+		}
+		else {
+			cout << "Whats your username? ";
+			player_usernames[1] = get_username();
+			player_usernames[2] = "Cross-O-Bot";
 		}
 
 
-		bool Fill_Square(int row, int col) {
-			// places the players symbol on the square selected
-			// check if square is empty, if its not then the square has been filled already 
-			// check if all the squares have been placed, if they have then the users have drawn
-			if (grid[row][col] != ' ') {
-				// squares already filled 
-				return false;
-			}
+		do {
+			system("cls"); // clear previous inputs
+			cout << "    1. back to main menu \n    2. to see controls \n    \x1b[4menter controls to start playing\x1b[0m \n" << endl;
+			Display_Grid();
+			Check_Input();
 
-			if (current_player == 1) {
-				grid[row][col] = 'X';
-				total_squares += 1;
-			}
-
-			else if (current_player == 2) {
-				grid[row][col] = 'O';
-				total_squares += 1;
-			};
-
-			if (total_squares == ROWS * COLS) {
-				// show new grid and break the loop 
+			if (check_winner() == true) {
+				// show new grid and break the loop
 				system("cls");
-				DisplayGrid();
-				input = '1';
-				cout << "draw!" << endl;
+				Display_Grid();
+				if (is_against_human) {
+					Play_Sound(true);
+				}
+				else { Play_Sound(false); }
+				break;
 			}
 
-			return true;
-		}
-		
-		void Write_Stats(string username, string vs, int wins, int losses, int draws) {
-			json data = read_stats_file();
-			if (data[vs].contains(username)) {
-				// if user exists then add the values instead 
-
-				data[vs][username]["wins"] = data[vs][username]["wins"].get<int>() + wins;
-				data[vs][username]["losses"] = data[vs][username]["losses"].get<int>() + losses;
-				data[vs][username]["draws"] = data[vs][username]["draws"].get<int>() + draws;
-			}
-			else {
-				// create the new json key/values
-				data[vs][username] = json{
-					{"wins", wins},
-					{"losses", losses},
-					{"draws", draws}
-				};
-			}
-
-			ofstream file("data.json");
-			file << data.dump(4);
-			file.close();
-		}
+			change_player();
+		} while (input != '1');
+		// user entered 1 therfore they want to go back to the main menu, return to the main loop 
+			return 0;
+	}
+};
 
 
-		json Read_Stats_File() {
-			// reads the file, if it doesnt exist create it, if it does then return the json object 
-			json data;
-			ifstream f("data.json");
-
-			if (f.fail()) {
-				cout << "Creating stats file." << endl;
-				data["vs-humans"] = json{};
-				data["vs-bot"] = json{};
-
-				ofstream file("data.json");
-				file << data.dump(4); // dump(4) means write it with 4 indents 
-				file.close();
-			}
-			else {
-				f >> data;
-				f.close();
-			}
-			return data;
-		}
-
-		void Display_LeaderBoard(){
-			json data = read_stats_file();
-			cout << data.dump(4) << endl;
-		}
-
-		void Display_Controls() {
-			cout << controls_message << endl;
-		}
-		
-		
-		void Play_Sound(bool is_winner) {
-			string file; 
-			if (is_winner){
-				cout << coloured_text("green", "congratulations " + player_usernames[current_player] + " you have won!!! ") << endl;
-				file = "celebration.wav";
-			else {file = "loludied.wav" }
 
 
-			// async play sound so i can ask the user if they want to quit the song (repeat song if they dont type anything)
-			// song file located in relative directory from where the exe was run 
-			PlaySound(TEXT(file), NULL, SND_FILENAME | SND_ASYNC | SND_LOOP);
-			cout << "press any key to stop music and return to the main menu " << endl;
-			cin >> input;
-			PlaySound(0, 0, 0); // stop music 
-
-		}
 
 
-}
-
-
+/*
 class Game_menu() {
 	public:
 
@@ -304,11 +450,8 @@ class Game_menu() {
 
 		int main_menu() {
 		}
-
-
-
 }
-
+*/
 
 
 
@@ -319,10 +462,10 @@ int main() {
 	// line wrapping 
 	std::cout << "\x1b[?7h";
 
+	tic_tac_toe tic_tac;
 
-	menu = Game_menu();
-	menu.leaderboard();
-
+	tic_tac.is_against_human = true; 
+	tic_tac.Game_Start();
 
 }
 
