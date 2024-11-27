@@ -173,6 +173,7 @@ class tic_tac_toe {
 
 		void clear_table() {
 			// reset the table 
+			total_squares = 0;
 			for (int row = 0; row < ROWS; row++) {
 				for (int col = 0; col < COLS; col++) {
 					grid[row][col] = ' ';
@@ -375,7 +376,7 @@ class tic_tac_toe {
 				}
 			}
 
-			// now we need to check horizontal  0,0 1,1 2,2 its just the same number repeating from 0,3 
+			// now we need to check diagonal  0,0 1,1 2,2 its just the same number repeating from 0,3 
 			check = "";
 			for (int i = 0; i < 3; i++) {
 				check += grid[i][i];
@@ -384,7 +385,7 @@ class tic_tac_toe {
 				}
 			}
 
-			// check the other horizontal 0,2, 1,1 2,0 
+			// check the other diagonal 0,2, 1,1 2,0 
 			check = "";
 			for (int i = 0; i < 3; i++) {
 				check += grid[i][COLS - i - 1]; // 3 - 0 - 1 = (2),  3 - 1 - 1 = (1), 3 - 2 - 1 = (0)
@@ -398,8 +399,6 @@ class tic_tac_toe {
 
 		int Game_Start() {
 			clear_table();
-			total_squares = 0;
-
 			if (is_against_human) {
 				cout << "Player 1 username = ";
 				player_usernames[1] = get_username();
@@ -443,7 +442,6 @@ class tic_tac_toe {
 
 
 
-//			cout << "The aim of noughts and crosses is to match 3 of your symbol (X or O) in a line of 3, the line can be vertical, horizontal or diagonal" << endl;
 
 
 
@@ -477,6 +475,51 @@ class Game_menu {
 
 
 				}
+				else if (input == '2') {
+					tic_tac_toe tic_tac;
+					string answer;
+					tic_tac.player_usernames[1] = "user1";
+					tic_tac.player_usernames[2] = "user2";
+
+					do {
+						system("cls");
+						cout << coloured_text("purple", "The aim of noughts and crosses is \nTo match either X or O in a line of 3.") << endl;
+						cout << "Choose what example you would like to see:" << endl;
+						cout << coloured_text("purple", "vertical,horizontal,diagonal") << endl;
+						cin >> answer;
+						tic_tac.clear_table();
+						if (answer == "vertical") {
+							for (int i = 0; i < 3; i++) {
+								system("cls");
+								tic_tac.Fill_Square(0, i);
+								tic_tac.Display_Grid();
+								Sleep(1000);
+							}
+						}
+
+						if (answer == "horizontal") {
+							for (int i = 0; i < 3; i++) {
+								system("cls");
+								tic_tac.Fill_Square(i, 0);
+								tic_tac.Display_Grid();
+								Sleep(1000);
+							}
+						}
+
+						if (answer == "diagonal") {
+							for (int i = 0; i < 3; i++) {
+								system("cls");
+								tic_tac.Fill_Square(i, i);
+								tic_tac.Display_Grid();
+								Sleep(1000);
+							}
+						}
+						cout << coloured_text("purple", "Thats an example of a possible \n" + answer + " line combination") << endl;
+						cout << "Would you like to quit? (y/n)" << endl;
+						cin >> answer;
+					} while (answer != "y");
+				}
+
 				else if (input == '3') {
 					system("cls");
 					cout << "LeaderBoard" << endl;
@@ -503,9 +546,7 @@ int main() {
 
 	
 	Game_menu menu;
-
 	menu.Menu_Loop();
-
 }
 
 
