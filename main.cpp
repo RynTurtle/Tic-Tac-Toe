@@ -149,7 +149,18 @@ json Read_Stats_File() {
 	}
 	return data;
 }
+
+
+
 void Display_LeaderBoard() {
+	/*
+	needs to:
+		order users based on wins and display their position 
+		3 spaces for numbers to allow max of 999 before it ruins table order
+		the 11 spaces for username
+
+	*/
+
 	json data = Read_Stats_File();
 	cout << data.dump(4) << endl;
 }
