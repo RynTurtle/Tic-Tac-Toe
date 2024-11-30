@@ -401,11 +401,21 @@ class tic_tac_toe {
 
 		string get_username() {
 			string username;
-			do {
+			while (true) {
 				cin >> username;
+				// convert username to lowercase
+				for (char& c : username) {
+					c = std::tolower(c);
+				}
 
-			} while (username.length() > 12 && username == "");
-				return username;
+				if (username == "cross-o-bot") {
+					cout << "Your username cant be the bots name" << endl;
+				}
+				if (username.length() <= 9) { break; }
+				else { cout << "your username is too long, it needs to be less than 9 characters" << endl; }
+			}
+
+			return username;
 		}
 
 		bool check_winner() {
@@ -470,7 +480,7 @@ class tic_tac_toe {
 			else {
 				cout << "Whats your username? ";
 				player_usernames[1] = get_username();
-				player_usernames[2] = "Cross-O-Bot";
+				player_usernames[2] = "cross-o-Bot";
 			}
 
 
