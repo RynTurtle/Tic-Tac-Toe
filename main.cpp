@@ -161,20 +161,21 @@ string ensure_length(int characters, string word) {
 	for (int i = 0; i < word.length() - characters; i++) {
 		word += " ";
 	}
-
 	return word;
 }
+
+
 
 void Display_LeaderBoard() {
 	json data = Read_Stats_File();
 	//cout << data.dump(4) << endl
 	json humans = data["vs-humans"];
 	json bot = data["vs-bot"];
-	// iterate the json object
 
-	cout << "Against Human:" << endl;
-	cout << "____________________________________" << endl;
-	cout << coloured_text("underline","| Username | Wins | losses | Draws |") << endl;
+	cout << "   Against Human:" << endl;
+	cout << "   ____________________________________" << endl;
+	cout << "   "<< coloured_text("underline", "| Username | Wins | losses | Draws |") << endl;
+	// iterate the json object
 	for (auto it = humans.begin(); it != humans.end(); ++it) {
 		string username = ensure_length(9, it.key());
 		auto value = it.value();
@@ -182,9 +183,22 @@ void Display_LeaderBoard() {
 		string draws = ensure_length(6, to_string(value["draws"]));
 		string losses = ensure_length(7, to_string(value["losses"]));
 
-		cout << coloured_text("underline","| " + username + "| " + wins + "| " + losses + "| " + draws + "|")<< endl;
+		cout << "   " << coloured_text("underline", "| " + username + "| " + wins + "| " + losses + "| " + draws + "|") << endl;
 	}
 
+	cout << "\n   Against Bot:" << endl;
+	cout << "   ____________________________________" << endl;
+	cout << "   " << coloured_text("underline", "| Username | Wins | losses | Draws |") << endl;
+	// iterate the json object
+	for (auto it = bot.begin(); it != bot.end(); ++it) {
+		string username = ensure_length(9, it.key());
+		auto value = it.value();
+		string wins = ensure_length(5, to_string(value["wins"]));
+		string draws = ensure_length(6, to_string(value["draws"]));
+		string losses = ensure_length(7, to_string(value["losses"]));
+
+		cout << "   " << coloured_text("underline", "| " + username + "| " + wins + "| " + losses + "| " + draws + "|") << endl;
+	}
 
 }
 
@@ -336,7 +350,7 @@ class tic_tac_toe {
 				data[vs][username]["draws"] = data[vs][username]["draws"].get<int>() + draws;
 			}
 			else {
-				// create the new json key/values
+				// create the new json key/values 
 				data[vs][username] = json{
 					{"wins", wins},
 					{"losses", losses},
