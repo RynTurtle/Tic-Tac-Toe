@@ -305,6 +305,11 @@ class tic_tac_toe {
 				Display_Grid();
 				input = '1';
 				cout << "draw!" << endl;
+
+				// add draw to both users 
+				Write_Stats(player_usernames[1], 0, 0, 1);
+				Write_Stats(player_usernames[2], 0, 0, 1);
+
 			}
 
 			return true;
@@ -340,8 +345,15 @@ class tic_tac_toe {
 
 		}
 
-		void Write_Stats(string username, string vs, int wins, int losses, int draws) {
+		void Write_Stats(string username, int wins, int losses, int draws) {
 			json data = Read_Stats_File();
+			string vs;
+			if (is_against_human) {
+				vs = "vs-humans";
+			}
+			else { vs = "vs-bot"; }
+
+
 			if (data[vs].contains(username)) {
 				// if user exists then add the values instead 
 
@@ -472,13 +484,27 @@ class tic_tac_toe {
 					// show new grid and break the loop
 					system("cls");
 					Display_Grid();
+					if (current_player == 1){
+						// player 1 wins then player 2 loses 
+						Write_Stats(player_usernames[1], 1, 0, 0);
+						Write_Stats(player_usernames[2], 0, 1, 0);
+					}
+					else { // player 2  wins, player 1 loses 
+						Write_Stats(player_usernames[2], 1, 0, 0);
+						Write_Stats(player_usernames[1], 0, 1, 0);
+					}
+
+
 					// if the winner won and it was the robot then the user lost and play the loser sound 
 					if (is_against_human == false && current_player == 2) {
 						Play_Sound(false);
 					}
 
 					// A user has won so play winner sound 
-					else {Play_Sound(true); }
+					else {
+						Play_Sound(true); 
+					}
+
 					break;
 				}
 
