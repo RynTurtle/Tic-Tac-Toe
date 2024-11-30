@@ -101,7 +101,10 @@ string coloured_text(string wanted_colour, string original_text) {
 		// bold high intensity white
 		original_text = "\x1b[1;97m" + original_text;
 	}
- 
+	else if (wanted_colour == "underline") {
+		original_text = "\x1b[4m" + original_text;
+	}
+
 	// ads the reset colour code so it doesnt continue
 	return original_text + "\x1b[0m";
 }
@@ -152,18 +155,40 @@ json Read_Stats_File() {
 
 
 
-void Display_LeaderBoard() {
-	/*
-	needs to:
-		order users based on wins and display their position 
-		3 spaces for numbers to allow max of 999 before it ruins table order
-		the 11 spaces for username
 
-	*/
+// makes sure the length of the word is whats wanted by adding spaces on either side 
+string ensure_length(int characters, string word) {
+	for (int i = 0; i < word.length() - characters; i++) {
+		word += " ";
+	}
 
-	json data = Read_Stats_File();
-	cout << data.dump(4) << endl;
+	return word;
 }
+
+void Display_LeaderBoard() {
+	json data = Read_Stats_File();
+	//cout << data.dump(4) << endl
+	json humans = data["vs-humans"];
+	json bot = data["vs-bot"];
+	// iterate the json object
+
+	cout << "Against Human:" << endl;
+	cout << "____________________________________" << endl;
+	cout << coloured_text("underline","| Username | Wins | losses | Draws |") << endl;
+	for (auto it = humans.begin(); it != humans.end(); ++it) {
+		string username = ensure_length(9, it.key());
+		auto value = it.value();
+		string wins = ensure_length(5, to_string(value["wins"]));
+		string draws = ensure_length(6, to_string(value["draws"]));
+		string losses = ensure_length(7, to_string(value["losses"]));
+
+		cout << coloured_text("underline","| " + username + "| " + wins + "| " + losses + "| " + draws + "|")<< endl;
+	}
+
+
+}
+
+
 
 
 
@@ -425,7 +450,7 @@ class tic_tac_toe {
 
 			do {
 				system("cls"); // clear previous inputs
-				cout << "    1. back to main menu \n    2. to see controls \n    \x1b[4menter controls to start playing\x1b[0m \n" << endl;
+				cout << "    1. back to main menu \n    2. to see controls \n    " + coloured_text("underline","enter controls to start playing \n") << endl;
 				Display_Grid();
 				Check_Input();
 
