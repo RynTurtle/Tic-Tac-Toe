@@ -41,7 +41,7 @@ R"(
     X          New game              O
     O+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-X
     X       1. 2 Players             O
-    O       2. Against Cross-o-Bot   X
+    O       2. Against X-O-Bot       X
     X       3. Return to main menu   O
     O+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-X
     XOXOXOXOXOXOXOXOXOXOXOXOXOXOXOXOXO
@@ -164,43 +164,6 @@ string ensure_length(int characters, string word) {
 	return word;
 }
 
-
-
-void Display_LeaderBoard() {
-	json data = Read_Stats_File();
-	//cout << data.dump(4) << endl
-	json humans = data["vs-humans"];
-	json bot = data["vs-bot"];
-
-	cout << "   Against Human:" << endl;
-	cout << "   ____________________________________" << endl;
-	cout << "   "<< coloured_text("underline", "| Username | Wins | losses | Draws |") << endl;
-	// iterate the json object
-	for (auto it = humans.begin(); it != humans.end(); ++it) {
-		string username = ensure_length(9, it.key());
-		auto value = it.value();
-		string wins = ensure_length(5, to_string(value["wins"]));
-		string draws = ensure_length(6, to_string(value["draws"]));
-		string losses = ensure_length(7, to_string(value["losses"]));
-
-		cout << "   " << coloured_text("underline", "| " + username + "| " + wins + "| " + losses + "| " + draws + "|") << endl;
-	}
-
-	cout << "\n   Against Bot:" << endl;
-	cout << "   ____________________________________" << endl;
-	cout << "   " << coloured_text("underline", "| Username | Wins | losses | Draws |") << endl;
-	// iterate the json object
-	for (auto it = bot.begin(); it != bot.end(); ++it) {
-		string username = ensure_length(9, it.key());
-		auto value = it.value();
-		string wins = ensure_length(5, to_string(value["wins"]));
-		string draws = ensure_length(6, to_string(value["draws"]));
-		string losses = ensure_length(7, to_string(value["losses"]));
-
-		cout << "   " << coloured_text("underline", "| " + username + "| " + wins + "| " + losses + "| " + draws + "|") << endl;
-	}
-
-}
 
 
 
@@ -408,7 +371,7 @@ class tic_tac_toe {
 					c = std::tolower(c);
 				}
 
-				if (username == "cross-o-bot") {
+				if (username == "x-o-bot") {
 					cout << "Your username cant be the bots name" << endl;
 				}
 				if (username.length() <= 9) { break; }
@@ -479,8 +442,8 @@ class tic_tac_toe {
 			}
 			else {
 				cout << "Whats your username? ";
-				player_usernames[1] = "cross-o-Bot";
-				player_usernames[2] = get_username();
+				player_usernames[1] = get_username();
+				player_usernames[2] = "X-O-Bot";
 			}
 
 
@@ -531,34 +494,11 @@ class tic_tac_toe {
 
 
 
+class Game_menu {
+	char input;
 
-void Menu_Loop() {
-	do {
-		system("cls");
-		cout << welcome_message << endl;
-		cin >> input;
-
-		// User wants to start the game, need to check if they want to play against AI or human 
-		if (input == '1') {
-			system("cls");
-
-			cout << game_message << endl;
-			cin >> input;
-			tic_tac_toe tic_tac;
-
-			// 
-			if (input == '1') {
-				tic_tac.is_against_human = true;
-				tic_tac.Game_Start();
-			}
-			else if (input == '2') {
-				tic_tac.is_against_human = false;
-				tic_tac.Game_Start();
-			}
-
-
-		}
-		else if (input == '2') {
+	public:
+		void HowToPlay() {
 			tic_tac_toe tic_tac;
 			string answer;
 			tic_tac.player_usernames[1] = "user1";
@@ -603,17 +543,83 @@ void Menu_Loop() {
 			} while (answer != "y");
 		}
 
-		else if (input == '3') {
-			system("cls");
-			cout << "LeaderBoard" << endl;
-			// back to main menu
-			Display_LeaderBoard();
-			system("pause");
+
+		void Display_LeaderBoard() {
+			json data = Read_Stats_File();
+			//cout << data.dump(4) << endl
+			json humans = data["vs-humans"];
+			json bot = data["vs-bot"];
+			cout << "   Against Human:" << endl;
+			cout << "   ____________________________________" << endl;
+			cout << "   " << coloured_text("underline", "| Username | Wins | losses | Draws |") << endl;
+			// iterate the json object
+			for (auto it = humans.begin(); it != humans.end(); ++it) {
+				string username = ensure_length(9, it.key());
+				auto value = it.value();
+				string wins = ensure_length(5, to_string(value["wins"]));
+				string draws = ensure_length(6, to_string(value["draws"]));
+				string losses = ensure_length(7, to_string(value["losses"]));
+
+				cout << "   " << coloured_text("underline", "| " + username + "| " + wins + "| " + losses + "| " + draws + "|") << endl;
+			}
+
+
+			cout << "\n   Against Bot:" << endl;
+			cout << "   ____________________________________" << endl;
+			cout << "   " << coloured_text("underline", "| Username | Wins | losses | Draws |") << endl;
+			for (auto it = bot.begin(); it != bot.end(); ++it) {
+				string username = ensure_length(9, it.key());
+				auto value = it.value();
+				string wins = ensure_length(5, to_string(value["wins"]));
+				string draws = ensure_length(6, to_string(value["draws"]));
+				string losses = ensure_length(7, to_string(value["losses"]));
+				cout << "   " << coloured_text("underline", "| " + username + "| " + wins + "| " + losses + "| " + draws + "|") << endl;
+			}
 
 		}
 
-	} while (input != '4');
-}
+		void Menu_Loop() {
+			do {
+				system("cls");
+				cout << welcome_message << endl;
+				cin >> input;
+
+				// User wants to start the game, need to check if they want to play against AI or human 
+				if (input == '1') {
+					system("cls");
+
+					cout << game_message << endl;
+					cin >> input;
+					tic_tac_toe tic_tac;
+
+					// 
+					if (input == '1') {
+						tic_tac.is_against_human = true;
+						tic_tac.Game_Start();
+					}
+					else if (input == '2') {
+						tic_tac.is_against_human = false;
+						tic_tac.Game_Start();
+					}
+
+
+				}
+				else if (input == '2') {
+					HowToPlay();
+				}
+
+				else if (input == '3') {
+					system("cls");
+					cout << "LeaderBoard" << endl;
+					// back to main menu
+					Display_LeaderBoard();
+					system("pause");
+
+				}
+
+			} while (input != '4');
+		}
+};
 
 
 
@@ -624,12 +630,13 @@ int main() {
 	// line wrapping 
 	std::cout << "\x1b[?7h";
 
-
-	Menu_Loop();
+	
+	Game_menu menu;
+	menu.Menu_Loop();
 }
 
 
 
 
-// need a message when theres a draw.
+
 //play against robot if you lose then play https://www.youtube.com/watch?v=NT4S8A7Vcsk
