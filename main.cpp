@@ -479,8 +479,8 @@ class tic_tac_toe {
 			}
 			else {
 				cout << "Whats your username? ";
-				player_usernames[1] = get_username();
-				player_usernames[2] = "cross-o-Bot";
+				player_usernames[1] = "cross-o-Bot";
+				player_usernames[2] = get_username();
 			}
 
 
@@ -531,95 +531,89 @@ class tic_tac_toe {
 
 
 
-class Game_menu {
-	char input;
 
-	public:
-		void Menu_Loop() {
+void Menu_Loop() {
+	do {
+		system("cls");
+		cout << welcome_message << endl;
+		cin >> input;
+
+		// User wants to start the game, need to check if they want to play against AI or human 
+		if (input == '1') {
+			system("cls");
+
+			cout << game_message << endl;
+			cin >> input;
+			tic_tac_toe tic_tac;
+
+			// 
+			if (input == '1') {
+				tic_tac.is_against_human = true;
+				tic_tac.Game_Start();
+			}
+			else if (input == '2') {
+				tic_tac.is_against_human = false;
+				tic_tac.Game_Start();
+			}
+
+
+		}
+		else if (input == '2') {
+			tic_tac_toe tic_tac;
+			string answer;
+			tic_tac.player_usernames[1] = "user1";
+			tic_tac.player_usernames[2] = "user2";
+
 			do {
 				system("cls");
-				cout << welcome_message << endl;
-				cin >> input;
-
-				// User wants to start the game, need to check if they want to play against AI or human 
-				if (input == '1') {
-					system("cls");
-
-					cout << game_message << endl;
-					cin >> input;
-					tic_tac_toe tic_tac;
-
-					// 
-					if (input == '1') {
-						tic_tac.is_against_human = true;
-						tic_tac.Game_Start();
-					}
-					else if (input == '2') {
-						tic_tac.is_against_human = false;
-						tic_tac.Game_Start();
-					}
-
-
-				}
-				else if (input == '2') {
-					tic_tac_toe tic_tac;
-					string answer;
-					tic_tac.player_usernames[1] = "user1";
-					tic_tac.player_usernames[2] = "user2";
-
-					do {
+				cout << coloured_text("purple", "The aim of noughts and crosses is \nTo match either X or O in a line of 3.") << endl;
+				cout << "Choose what example you would like to see:" << endl;
+				cout << coloured_text("purple", "vertical,horizontal,diagonal") << endl;
+				cin >> answer;
+				tic_tac.clear_table();
+				if (answer == "vertical") {
+					for (int i = 0; i < 3; i++) {
 						system("cls");
-						cout << coloured_text("purple", "The aim of noughts and crosses is \nTo match either X or O in a line of 3.") << endl;
-						cout << "Choose what example you would like to see:" << endl;
-						cout << coloured_text("purple", "vertical,horizontal,diagonal") << endl;
-						cin >> answer;
-						tic_tac.clear_table();
-						if (answer == "vertical") {
-							for (int i = 0; i < 3; i++) {
-								system("cls");
-								tic_tac.Fill_Square(0, i);
-								tic_tac.Display_Grid();
-								Sleep(1000);
-							}
-						}
-
-						if (answer == "horizontal") {
-							for (int i = 0; i < 3; i++) {
-								system("cls");
-								tic_tac.Fill_Square(i, 0);
-								tic_tac.Display_Grid();
-								Sleep(1000);
-							}
-						}
-
-						if (answer == "diagonal") {
-							for (int i = 0; i < 3; i++) {
-								system("cls");
-								tic_tac.Fill_Square(i, i);
-								tic_tac.Display_Grid();
-								Sleep(1000);
-							}
-						}
-						cout << coloured_text("purple", "Thats an example of a possible \n" + answer + " line combination") << endl;
-						cout << "Would you like to quit? (y/n)" << endl;
-						cin >> answer;
-					} while (answer != "y");
+						tic_tac.Fill_Square(0, i);
+						tic_tac.Display_Grid();
+						Sleep(1000);
+					}
 				}
 
-				else if (input == '3') {
-					system("cls");
-					cout << "LeaderBoard" << endl;
-					// back to main menu
-					Display_LeaderBoard();
-					system("pause");
-
+				if (answer == "horizontal") {
+					for (int i = 0; i < 3; i++) {
+						system("cls");
+						tic_tac.Fill_Square(i, 0);
+						tic_tac.Display_Grid();
+						Sleep(1000);
+					}
 				}
 
-			} while (input != '4');
+				if (answer == "diagonal") {
+					for (int i = 0; i < 3; i++) {
+						system("cls");
+						tic_tac.Fill_Square(i, i);
+						tic_tac.Display_Grid();
+						Sleep(1000);
+					}
+				}
+				cout << coloured_text("purple", "Thats an example of a possible \n" + answer + " line combination") << endl;
+				cout << "Would you like to quit? (y/n)" << endl;
+				cin >> answer;
+			} while (answer != "y");
 		}
 
-};
+		else if (input == '3') {
+			system("cls");
+			cout << "LeaderBoard" << endl;
+			// back to main menu
+			Display_LeaderBoard();
+			system("pause");
 
+		}
+
+	} while (input != '4');
+}
 
 
 
@@ -630,13 +624,12 @@ int main() {
 	// line wrapping 
 	std::cout << "\x1b[?7h";
 
-	
-	Game_menu menu;
-	menu.Menu_Loop();
+
+	Menu_Loop();
 }
 
 
 
 
-
+// need a message when theres a draw.
 //play against robot if you lose then play https://www.youtube.com/watch?v=NT4S8A7Vcsk
