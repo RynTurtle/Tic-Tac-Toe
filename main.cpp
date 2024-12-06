@@ -262,19 +262,6 @@ class tic_tac_toe {
 				total_squares += 1;
 			};
 
-			if (total_squares == ROWS * COLS) {
-				// show new grid and break the loop 
-				system("cls");
-				Display_Grid();
-				input = '1';
-				cout << "draw!" << endl;
-
-				// add draw to both users 
-				Write_Stats(player_usernames[1], 0, 0, 1);
-				Write_Stats(player_usernames[2], 0, 0, 1);
-
-			}
-
 			return true;
 		}
 
@@ -381,7 +368,7 @@ class tic_tac_toe {
 			return username;
 		}
 
-		bool check_winner() {
+		int check_winner() {
 			string check = "";
 			// 0,0 0,1 0,2 
 			// 1,0 1,1 1,2 
@@ -395,7 +382,7 @@ class tic_tac_toe {
 					check += grid[row][col];
 					// if theres a match then a winner has been found 
 					if (check == "XXX" || check == "OOO") {
-						return true;
+						return 1;
 					}
 				}
 			}
@@ -406,7 +393,7 @@ class tic_tac_toe {
 				for (int col = 0; col < COLS; col++) {
 					check += grid[row][col];
 					if (check == "XXX" || check == "OOO") {
-						return true;
+						return 1;
 					}
 				}
 			}
@@ -416,7 +403,7 @@ class tic_tac_toe {
 			for (int i = 0; i < 3; i++) {
 				check += grid[i][i];
 				if (check == "XXX" || check == "OOO") {
-					return true;
+					return 1;
 				}
 			}
 
@@ -425,10 +412,15 @@ class tic_tac_toe {
 			for (int i = 0; i < 3; i++) {
 				check += grid[i][COLS - i - 1]; // 3 - 0 - 1 = (2),  3 - 1 - 1 = (1), 3 - 2 - 1 = (0)
 				if (check == "XXX" || check == "OOO") {
-					return true;
+					return 1;
 				}
 			}
-			return false;
+
+			if (total_squares == ROWS * COLS) {
+				// its a draw!
+				return 3; 
+			}
+			return 0;
 		}
 
 
@@ -453,7 +445,7 @@ class tic_tac_toe {
 				Display_Grid();
 				Check_Input();
 
-				if (check_winner() == true) {
+				if (check_winner() == 1) {
 					// show new grid and break the loop
 					system("cls");
 					Display_Grid();
@@ -479,6 +471,16 @@ class tic_tac_toe {
 					}
 
 					break;
+				}
+				else if (check_winner() == 3) {
+					system("cls");
+					Display_Grid();
+					input = '1';
+					cout << "draw!" << endl;
+					// add draw to both users 
+					Write_Stats(player_usernames[1], 0, 0, 1);
+					Write_Stats(player_usernames[2], 0, 0, 1);
+					system("pause");
 				}
 
 				change_player();
@@ -623,6 +625,18 @@ class Game_menu {
 
 
 
+
+// maximiser is the AI - it wants the highest possible score 
+// minimiser is the human - they want to choose the ai's lowest score so they have the higher chances 
+//int minmax(grid,is_maximising) {
+
+
+
+
+//}
+
+
+
 int main() {
 	change_font_size(30);
 	// resize console window 8;rows;cols
@@ -633,6 +647,11 @@ int main() {
 	
 	Game_menu menu;
 	menu.Menu_Loop();
+
+	//tic_tac_toe tic_tac;
+//	tic_tac.is_against_human = false;
+
+
 }
 
 
