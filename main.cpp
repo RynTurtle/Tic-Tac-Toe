@@ -154,20 +154,6 @@ json Read_Stats_File() {
 }
 
 
-
-
-// makes sure the length of the word is whats wanted by adding spaces on either side 
-string ensure_length(int characters, string word) {
-	for (int i = 0; i < word.length() - characters; i++) {
-		word += " ";
-	}
-	return word;
-}
-
-
-
-
-
 class tic_tac_toe {
 	private:
 		char input;
@@ -178,15 +164,14 @@ class tic_tac_toe {
 		// map within a map containing the usernames player1:name1, player2:name2
 		std::unordered_map<int, std::string> player_usernames;
 
-
-		void change_player() {
+		void Change_Player() {
 			if (current_player == 1)
 				current_player = 2;
 			else current_player = 1;
 		}
 
-		void clear_table() {
-			// reset the table 
+		void Clear_Grid() {
+			// reset the grid 
 			total_squares = 0;
 			for (int row = 0; row < ROWS; row++) {
 				for (int col = 0; col < COLS; col++) {
@@ -194,6 +179,58 @@ class tic_tac_toe {
 				}
 			}
 		}
+
+		void Write_Stats(string username, int wins, int losses, int draws) {
+			json data = Read_Stats_File();
+			string vs;
+			if (is_against_human) {
+				vs = "vs-humans";
+			}
+			else { vs = "vs-bot"; }
+
+			if (data[vs].contains(username)) {
+				// if user exists then add the values instead 
+
+				data[vs][username]["wins"] = data[vs][username]["wins"].get<int>() + wins;
+				data[vs][username]["losses"] = data[vs][username]["losses"].get<int>() + losses;
+				data[vs][username]["draws"] = data[vs][username]["draws"].get<int>() + draws;
+			}
+			else {
+				// create the new json key/values 
+				data[vs][username] = json{
+					{"wins", wins},
+					{"losses", losses},
+					{"draws", draws}
+				};
+			}
+
+			ofstream file("data.json");
+			file << data.dump(4);
+			file.close();
+		}
+
+		void Play_Sound(bool is_winner) {
+			string file;
+			string keypress;
+			if (is_winner) {
+				cout << coloured_text("green", "Congratulations " + player_usernames[current_player] + ", you have won!!!") << endl;
+				file = "celebration.wav";
+			}
+			else {
+				file = "loludied.wav";
+			}
+
+			// playing the sound in async mode so it can also handle input at the same time 
+			PlaySoundA(file.c_str(), NULL, SND_FILENAME | SND_ASYNC | SND_LOOP);
+
+			// when a the user enters any key it will
+			cout << "Press any key to stop the music and return to the main menu." << endl;
+			cin >> keypress;
+
+			// stop the sound 
+			PlaySound(NULL, 0, 0);
+		}
+
 
 		void Display_Grid() {
 			string whole_grid = "";
@@ -239,7 +276,6 @@ class tic_tac_toe {
 					}
 				}
 			}
-
 			cout << whole_grid << endl;
 		}
 
@@ -296,80 +332,7 @@ class tic_tac_toe {
 
 		}
 
-		void Write_Stats(string username, int wins, int losses, int draws) {
-			json data = Read_Stats_File();
-			string vs;
-			if (is_against_human) {
-				vs = "vs-humans";
-			}
-			else { vs = "vs-bot"; }
-
-
-			if (data[vs].contains(username)) {
-				// if user exists then add the values instead 
-
-				data[vs][username]["wins"] = data[vs][username]["wins"].get<int>() + wins;
-				data[vs][username]["losses"] = data[vs][username]["losses"].get<int>() + losses;
-				data[vs][username]["draws"] = data[vs][username]["draws"].get<int>() + draws;
-			}
-			else {
-				// create the new json key/values 
-				data[vs][username] = json{
-					{"wins", wins},
-					{"losses", losses},
-					{"draws", draws}
-				};
-			}
-
-			ofstream file("data.json");
-			file << data.dump(4);
-			file.close();
-		}
-
-
-
-		void Play_Sound(bool is_winner) {
-			string file;
-			string keypress;
-			if (is_winner) {
-				cout << coloured_text("green", "Congratulations " + player_usernames[current_player] + ", you have won!!!") << endl;
-				file = "celebration.wav";
-			}
-			else {
-				file = "loludied.wav";
-			}
-
-			// playing the sound in async mode so it can also handle input at the same time 
-			PlaySoundA(file.c_str(), NULL, SND_FILENAME | SND_ASYNC | SND_LOOP);
-
-			// when a the user enters any key it will
-			cout << "Press any key to stop the music and return to the main menu." << endl;
-			cin >> keypress;
-
-			// stop the sound 
-			PlaySound(NULL, 0, 0);
-		}
-
-		string get_username() {
-			string username;
-			while (true) {
-				cin >> username;
-				// convert username to lowercase
-				for (char& c : username) {
-					c = std::tolower(c);
-				}
-
-				if (username == "x-o-bot") {
-					cout << "Your username cant be the bots name" << endl;
-				}
-				if (username.length() <= 9) { break; }
-				else { cout << "your username is too long, it needs to be less than 9 characters" << endl; }
-			}
-
-			return username;
-		}
-
-		int check_winner() {
+		int Check_Winner() {
 			string check = "";
 			// 0,0 0,1 0,2 
 			// 1,0 1,1 1,2 
@@ -424,67 +387,77 @@ class tic_tac_toe {
 			return 0;
 		}
 
+		string Get_Username() {
+			string username;
+			while (true) {
+				cin >> username;
+				// convert username to lowercase
+				for (char& c : username) {
+					c = std::tolower(c);
+				}
+
+				if (username == "x-o-bot") {
+					cout << "Your username cant be the bots name" << endl;
+				}
+				if (username.length() <= 9) { break; }
+				else { cout << "your username is too long, it needs to be less than 9 characters" << endl; }
+			}
+
+			return username;
+		}
 
 		int Game_Start() {
-			clear_table();
+			Clear_Grid();
 			if (is_against_human) {
 				cout << "Player 1 username = ";
-				player_usernames[1] = get_username();
+				player_usernames[1] = Get_Username();
 				cout << "Player 2 username = ";
-				player_usernames[2] = get_username();
+				player_usernames[2] = Get_Username();
 			}
 			else {
 				cout << "Whats your username? ";
-				player_usernames[1] = get_username();
+				player_usernames[1] = Get_Username();
 				player_usernames[2] = "X-O-Bot";
 			}
-
 
 			do {
 				system("cls"); // clear previous inputs
 				cout << "    1. back to main menu \n    2. to see controls \n    " + coloured_text("underline","enter controls to start playing \n") << endl;
 				Display_Grid();
 				Check_Input();
-
-				if (check_winner() == 1) {
-					// show new grid and break the loop
+				int win_check = Check_Winner();
+				// win/draw
+				if (win_check != 0) {
 					system("cls");
 					Display_Grid();
-					if (current_player == 1){
-						// player 1 wins then player 2 loses 
-						Write_Stats(player_usernames[1], 1, 0, 0);
-						Write_Stats(player_usernames[2], 0, 1, 0);
+					// update stats 
+					if (win_check == 1) {
+						if (current_player == 1) {
+							// player 1 wins then player 2 loses 
+							Write_Stats(player_usernames[1], 1, 0, 0);
+							Write_Stats(player_usernames[2], 0, 1, 0);
+						}
+						else { // player 2  wins, player 1 loses 
+							Write_Stats(player_usernames[2], 1, 0, 0);
+							Write_Stats(player_usernames[1], 0, 1, 0);
+						}
 					}
-					else { // player 2  wins, player 1 loses 
-						Write_Stats(player_usernames[2], 1, 0, 0);
-						Write_Stats(player_usernames[1], 0, 1, 0);
+					else if (win_check == 3) {
+						cout << "draw!" << endl;
+						// write draw to both users 
+						Write_Stats(player_usernames[1], 0, 0, 1);
+						Write_Stats(player_usernames[2], 0, 0, 1);
+						system("pause");
+						break;
 					}
 
-
-					// if the winner won and it was the robot then the user lost and play the loser sound 
-					if (is_against_human == false && current_player == 2) {
-						Play_Sound(false);
-					}
-
-					// A user has won so play winner sound 
-					else {
-						Play_Sound(true); 
-					}
-
+					// play loser sound only if your against the bot and you lost, otherwise there will always be a winner
+					if (is_against_human == false && current_player == 2) { Play_Sound(false); }
+					else { Play_Sound(true); }
+					// break game loop once a game state has ended 
 					break;
 				}
-				else if (check_winner() == 3) {
-					system("cls");
-					Display_Grid();
-					input = '1';
-					cout << "draw!" << endl;
-					// add draw to both users 
-					Write_Stats(player_usernames[1], 0, 0, 1);
-					Write_Stats(player_usernames[2], 0, 0, 1);
-					system("pause");
-				}
-
-				change_player();
+				Change_Player();
 			} while (input != '1');
 			// user entered 1 therfore they want to go back to the main menu, return to the main loop 
 				return 0;
@@ -493,60 +466,16 @@ class tic_tac_toe {
 
 
 
-
-
-
-
 class Game_menu {
 	private:
 		char input;
-
-	public:
-		void HowToPlay() {
-			tic_tac_toe tic_tac;
-			string answer;
-			tic_tac.player_usernames[1] = "user1";
-			tic_tac.player_usernames[2] = "user2";
-
-			do {
-				system("cls");
-				cout << coloured_text("purple", "The aim of noughts and crosses is \nTo match either X or O in a line of 3.") << endl;
-				cout << "Choose what example you would like to see:" << endl;
-				cout << coloured_text("purple", "vertical,horizontal,diagonal") << endl;
-				cin >> answer;
-				tic_tac.clear_table();
-				if (answer == "vertical") {
-					for (int i = 0; i < 3; i++) {
-						system("cls");
-						tic_tac.Fill_Square(0, i);
-						tic_tac.Display_Grid();
-						Sleep(1000);
-					}
-				}
-
-				if (answer == "horizontal") {
-					for (int i = 0; i < 3; i++) {
-						system("cls");
-						tic_tac.Fill_Square(i, 0);
-						tic_tac.Display_Grid();
-						Sleep(1000);
-					}
-				}
-
-				if (answer == "diagonal") {
-					for (int i = 0; i < 3; i++) {
-						system("cls");
-						tic_tac.Fill_Square(i, i);
-						tic_tac.Display_Grid();
-						Sleep(1000);
-					}
-				}
-				cout << coloured_text("purple", "Thats an example of a possible \n" + answer + " line combination") << endl;
-				cout << "Would you like to quit? (y/n)" << endl;
-				cin >> answer;
-			} while (answer != "y");
+		// makes sure the length of the word is whats wanted by adding spaces on either side 
+		string ensure_length(int characters, string word) {
+			for (int i = 0; i < word.length() - characters; i++) {
+				word += " ";
+			}
+			return word;
 		}
-
 
 		void Display_LeaderBoard() {
 			json data = Read_Stats_File();
@@ -579,9 +508,54 @@ class Game_menu {
 				string losses = ensure_length(7, to_string(value["losses"]));
 				cout << "   " << coloured_text("underline", "| " + username + "| " + wins + "| " + losses + "| " + draws + "|") << endl;
 			}
-
 		}
 
+		void HowToPlay() {
+			tic_tac_toe tic_tac;
+			string answer;
+			tic_tac.player_usernames[1] = "user1";
+			tic_tac.player_usernames[2] = "user2";
+
+			do {
+				system("cls");
+				cout << coloured_text("purple", "The aim of noughts and crosses is \nTo match either X or O in a line of 3.") << endl;
+				cout << "Choose what example you would like to see:" << endl;
+				cout << coloured_text("purple", "vertical,horizontal,diagonal") << endl;
+				cin >> answer;
+				tic_tac.Clear_Grid();
+				if (answer == "vertical") {
+					for (int i = 0; i < 3; i++) {
+						system("cls");
+						tic_tac.Fill_Square(0, i);
+						tic_tac.Display_Grid();
+						Sleep(1000);
+					}
+				}
+
+				if (answer == "horizontal") {
+					for (int i = 0; i < 3; i++) {
+						system("cls");
+						tic_tac.Fill_Square(i, 0);
+						tic_tac.Display_Grid();
+						Sleep(1000);
+					}
+				}
+
+				if (answer == "diagonal") {
+					for (int i = 0; i < 3; i++) {
+						system("cls");
+						tic_tac.Fill_Square(i, i);
+						tic_tac.Display_Grid();
+						Sleep(1000);
+					}
+				}
+				cout << coloured_text("purple", "Thats an example of a possible \n" + answer + " line combination") << endl;
+				cout << "Would you like to quit? (y/n)" << endl;
+				cin >> answer;
+			} while (answer != "y");
+		}
+
+	public:
 		void Menu_Loop() {
 			do {
 				system("cls");
@@ -596,23 +570,23 @@ class Game_menu {
 					cin >> input;
 					tic_tac_toe tic_tac;
 
-					// 
+					// human
 					if (input == '1') {
 						tic_tac.is_against_human = true;
 						tic_tac.Game_Start();
-					}
+					}// AI
 					else if (input == '2') {
 						tic_tac.is_against_human = false;
 						tic_tac.Game_Start();
 					}
 
 
-				}
+				}// show them how to play 
 				else if (input == '2') {
 					HowToPlay();
 				}
 
-				else if (input == '3') {
+				else if (input == '3') {// display the leaderboard reading the json file
 					system("cls");
 					cout << "LeaderBoard" << endl;
 					// back to main menu
@@ -624,12 +598,6 @@ class Game_menu {
 			} while (input != '4');
 		}
 };
-
-
-
-
-
-
 
 
 int main() {
