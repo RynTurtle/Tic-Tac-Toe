@@ -168,12 +168,13 @@ string ensure_length(int characters, string word) {
 
 
 
-
- 
 class tic_tac_toe {
+	private:
+		char input;
+
+
 	public:
 		bool is_against_human;
-		char input;
 		// map within a map containing the usernames player1:name1, player2:name2
 		std::unordered_map<int, std::string> player_usernames;
 
@@ -227,7 +228,7 @@ class tic_tac_toe {
 			whole_grid += "    XOXOXOXOXOXOXOXOXOXOXOXOXOXOXOXOX\n";
 
 			// loop through table and add the colours for X/O 
-			for (std::string::size_type i = 0; i < whole_grid.size(); ++i) {
+			for (string::size_type i = 0; i < whole_grid.size(); ++i) {
 				// since theres an XO pattern around the game table I need to check if the surrounding characters have | on either side.
 				if (i >= 3 && i < whole_grid.size() - 3) { 
 					if ((whole_grid[i - 3] == '|' || whole_grid[i + 3] == '|') && whole_grid[i] == 'X') {
@@ -497,7 +498,8 @@ class tic_tac_toe {
 
 
 class Game_menu {
-	char input;
+	private:
+		char input;
 
 	public:
 		void HowToPlay() {
@@ -626,14 +628,7 @@ class Game_menu {
 
 
 
-// maximiser is the AI - it wants the highest possible score 
-// minimiser is the human - they want to choose the ai's lowest score so they have the higher chances 
-//int minmax(grid,is_maximising) {
 
-
-
-
-//}
 
 
 
@@ -648,14 +643,73 @@ int main() {
 	Game_menu menu;
 	menu.Menu_Loop();
 
-	//tic_tac_toe tic_tac;
-//	tic_tac.is_against_human = false;
 
-
+ ;
 }
 
 
 
 
 
-//play against robot if you lose then play https://www.youtube.com/watch?v=NT4S8A7Vcsk
+
+/*
+
+
+// maximiser is the AI - it wants the highest possible score
+// minimiser is the human - they want to choose the ai's lowest score so they have the higher chances
+// returns the game state (how good a move is) based on recursion of itself reaching a terminal state (10 being good, 0 being okay, -10 being bad)
+int minimax(char grid[ROWS][COLS],bool is_maximising) {
+	tic_tac_toe tic_tac;
+	// if there is a current winner then terminate the board tree recursion (terminal state)
+	int result = tic_tac.check_winner();
+	if (result == 1) {
+		// the AI won so it gets 10 points, points can be more than 10 just as long as its positive
+		if (is_maximising) {
+			return 10;
+		}
+		else {
+			return -10; // human won
+		}
+
+	}
+	else if (result == 3) {
+		// it was a draw so it gets 0 points
+		return 0;
+	}
+
+	int best_score;
+	// here i am recursively checking each possible move in the board given
+	if (is_maximising) {
+		// the best score for the AI is the highest possible number, we assume it can get a very low score first and compare it
+		best_score = -1000;
+		for (int row = 0; row < ROWS; row++) {
+			for (int col = 0; col < COLS; col++) {
+				// if theres an available move then get the score for the move
+				if (grid[row][col] == ' ') {
+					grid[row][col] = 'X';
+					int score = minimax(grid,false); // get the score for the next move
+					grid[row][col] = ' '; // undo the move
+					best_score = max(best_score, score);
+				}
+			}
+		}
+
+	}
+	else {
+		// the best score for the human is the lowest score of minmax due to it being lowest chance of the AI winning
+		// we assume that the human can have a very high score to compare to get the lowest score
+		best_score = 1000;
+		for (int row = 0; row < ROWS; row++) {
+			for (int col = 0; col < COLS; col++) {
+				// if theres an available move then get the score for the move
+				if (grid[row][col] == ' ') {
+					grid[row][col] = 'O';
+					int score = minimax(grid,true); // get the score for the next move
+					grid[row][col] = ' '; // undo the move
+					best_score = min(best_score, score);
+				}
+			}
+		}
+	}
+	return best_scor
+*/
