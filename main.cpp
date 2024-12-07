@@ -298,32 +298,106 @@ class tic_tac_toe {
 			return true;
 		}
 
+		int Check_Winner() {
+			string check = "";
+			// 0,0 0,1 0,2 
+			// 1,0 1,1 1,2 
+			// 2,0 2,1 2,2 
+			// 
+			// for every colum (top to bottom) check if three characters match 
+			for (int col = 0; col < COLS; col++) {
+				check = ""; // after each column reset the 3 characters
+				for (int row = 0; row < ROWS; row++) {
+					// append to check variable 
+					check += grid[row][col];
+				}
+				// if theres a match then a winner has been found 
+				if (check == "XXX") return 1;  
+				if (check == "OOO") return -1; 
+			}
+
+			// now we do the same for rows (left to right) 
+			for (int row = 0; row < ROWS; row++) {
+				check = "";
+				for (int col = 0; col < COLS; col++) {
+					check += grid[row][col];
+				}
+				if (check == "XXX") return 1;
+				if (check == "OOO") return -1;
+			}
+
+			// now we need to check diagonal  0,0 1,1 2,2 its just the same number repeating from 0,3 
+			check = "";
+			for (int i = 0; i < 3; i++) {
+				check += grid[i][i];
+			}
+			if (check == "XXX") return 1;
+			if (check == "OOO") return -1;
+
+			// check the other diagonal 0,2, 1,1 2,0 
+			check = "";
+			for (int i = 0; i < 3; i++) {
+				check += grid[i][COLS - i - 1]; // 3 - 0 - 1 = (2),  3 - 1 - 1 = (1), 3 - 2 - 1 = (0)
+			}
+			
+			if (check == "XXX") return 1;
+			if (check == "OOO") return -1;
+
+
+			int filled = 0;
+			for (int row = 0; row < ROWS; row++) {
+				for (int col = 0; col < COLS; col++) {
+					if (grid[row][col] != ' ') {
+						filled += 1;
+					}
+				}
+			}
+			if (filled == ROWS * COLS) {
+				// its a draw!
+				return 3;
+			}
+
+
+			return 0;
+		}
 
 		// maximiser is the AI - it wants the highest possible score
 		// minimiser is the human - they want to choose the ai's lowest score so they have the higher chances
 		// returns the game state (how good a move is) based on recursion of itself reaching a terminal state (10 being good, 0 being okay, -10 being bad)
 		int minimax(bool is_maximising) {
-			tic_tac_toe tic_tac;
 			// if there is a current winner then terminate the board tree recursion (terminal state)
-			int result = tic_tac.Check_Winner();
+			
+			// Print the current board state
+			//cout << "Current board state:" << endl;
+			//for (int i = 0; i < ROWS; i++) {
+			//	for (int j = 0; j < COLS; j++) {
+			//		cout << grid[i][j] << " ";
+			//	}
+			//	cout << endl;
+			//}
+			//cout << "is_maximising " << is_maximising << endl;
+
+			int result = Check_Winner();
 			if (result == 1) {
 				// the AI won so it gets 10 points, points can be more than 10 just as long as its positive
-				if (is_maximising) {
-					return 10;
-				}
-				else {
-					return -10; // human won
-				}
-
+				return 10;
+			}
+			else if (result == -1){
+				//cout << "human win " << endl;
+				return -10; // human won
 			}
 			else if (result == 3) {
 				// it was a draw so it gets 0 points
+				//cout << "draw" << endl; 
 				return 0;
 			}
+			//cout << "Check_Winner returned: " << result << endl;
+
 
 			int best_score;
 			// here i am recursively checking each possible move in the board given
 			if (is_maximising) {
+				//cout << "max" << endl;
 				// the best score for the AI is the highest possible number, we assume it can get a very low score first and compare it
 				best_score = -1000;
 				for (int row = 0; row < ROWS; row++) {
@@ -331,7 +405,8 @@ class tic_tac_toe {
 						// if theres an available move then get the score for the move
 						if (grid[row][col] == ' ') {
 							grid[row][col] = 'X';  
-							int score = minimax(false); // get the score for the next move
+							//cout << "setting to false " << endl;
+							int score = minimax(false); // minimise next turn for human
 							grid[row][col] = ' '; // undo the move
 							best_score = max(best_score, score);
 						}
@@ -340,6 +415,7 @@ class tic_tac_toe {
 
 			}
 			else {
+				//cout << "min" << endl;
 				// the best score for the human is the lowest score of minmax due to it being lowest chance of the AI winning
 				// we assume that the human can have a very high score to compare to get the lowest score
 				best_score = 1000;
@@ -348,19 +424,22 @@ class tic_tac_toe {
 						// if theres an available move then get the score for the move
 						if (grid[row][col] == ' ') {
 							grid[row][col] = 'O';
-							int score = minimax(true); // get the score for the next move
+							//cout << "setting to true " << endl;
+							int score = minimax(true); // maximise next for ai 
 							grid[row][col] = ' '; // undo the move
 							best_score = min(best_score, score);
 						}
 					}
 				}
 			}
+
 			return best_score;
 		}
 
+		// now i go through the main tree 
 		pair<int, int> best_move() {
 			pair<int, int> move;
-			int best_score = -1000;
+			int best_score = -1000; // find the maximum number again 
 			for (int row = 0; row < ROWS; row++) {
 				for (int col = 0; col < COLS; col++) {
 					if (grid[row][col] == ' ') {
@@ -423,72 +502,6 @@ class tic_tac_toe {
 
 		}
 
-		int Check_Winner() {
-			string check = "";
-			// 0,0 0,1 0,2 
-			// 1,0 1,1 1,2 
-			// 2,0 2,1 2,2 
-			// 
-			// for every colum (top to bottom) check if three characters match 
-			for (int col = 0; col < COLS; col++) {
-				check = ""; // after each column reset the 3 characters
-				for (int row = 0; row < ROWS; row++) {
-					// append to check variable 
-					check += grid[row][col];
-					// if theres a match then a winner has been found 
-					if (check == "XXX" || check == "OOO") {
-						return 1;
-					}
-				}
-			}
-
-			// now we do the same for rows (left to right) 
-			for (int row = 0; row < ROWS; row++) {
-				check = "";
-				for (int col = 0; col < COLS; col++) {
-					check += grid[row][col];
-					if (check == "XXX" || check == "OOO") {
-						return 1;
-					}
-				}
-			}
-
-			// now we need to check diagonal  0,0 1,1 2,2 its just the same number repeating from 0,3 
-			check = "";
-			for (int i = 0; i < 3; i++) {
-				check += grid[i][i];
-				if (check == "XXX" || check == "OOO") {
-					return 1;
-				}
-			}
-
-			// check the other diagonal 0,2, 1,1 2,0 
-			check = "";
-			for (int i = 0; i < 3; i++) {
-				check += grid[i][COLS - i - 1]; // 3 - 0 - 1 = (2),  3 - 1 - 1 = (1), 3 - 2 - 1 = (0)
-				if (check == "XXX" || check == "OOO") {
-					return 1;
-				}
-			}
-
-			int board_max = ROWS * COLS;
-			
-			int filled = 0;
-			for (int row = 0; row < ROWS; row++) {
-				for (int col = 0; col < COLS; col++) {
-					if (grid[row][col] != ' ') {
-						filled += 1;
-					}
-				}
-			}
-			if (filled == board_max) {
-				// its a draw!
-				return 3; 
-			}
-
-
-			return 0;
-		}
 
 		string Get_Username() {
 			string username;
@@ -540,7 +553,7 @@ class tic_tac_toe {
 					system("cls");
 					Display_Grid();
 					// update stats 
-					if (win_check == 1) {
+					if (win_check == 1 || win_check == -1) {
 						if (current_player == 1) {
 							// player 1 wins then player 2 loses 
 							Write_Stats(player_usernames[1], 1, 0, 0);
