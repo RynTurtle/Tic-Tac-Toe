@@ -397,7 +397,7 @@ class tic_tac_toe {
 			int best_score;
 			// here i am recursively checking each possible move in the board given
 			if (is_maximising) {
-				//cout << "max" << endl;
+				cout << "max" << endl;
 				// the best score for the AI is the highest possible number, we assume it can get a very low score first and compare it
 				best_score = -1000;
 				for (int row = 0; row < ROWS; row++) {
@@ -407,8 +407,8 @@ class tic_tac_toe {
 							grid[row][col] = 'X';  
 							//cout << "setting to false " << endl;
 							int score = minimax(false); // minimise next turn for human
-							grid[row][col] = ' '; // undo the move
 							best_score = max(best_score, score);
+							grid[row][col] = ' '; // undo the move
 						}
 					}
 				}
@@ -424,10 +424,10 @@ class tic_tac_toe {
 						// if theres an available move then get the score for the move
 						if (grid[row][col] == ' ') {
 							grid[row][col] = 'O';
-							//cout << "setting to true " << endl;
+							cout << "setting to true " << endl;
 							int score = minimax(true); // maximise next for ai 
-							grid[row][col] = ' '; // undo the move
 							best_score = min(best_score, score);
+							grid[row][col] = ' '; // undo the move
 						}
 					}
 				}
@@ -440,6 +440,12 @@ class tic_tac_toe {
 		pair<int, int> best_move() {
 			pair<int, int> move;
 			int best_score = -1000; // find the maximum number again 
+			// I like the middle to be always chosen first 
+			if (grid[1][1] == ' ') {
+				move = { 1,1 };
+				return move;
+			}
+
 			for (int row = 0; row < ROWS; row++) {
 				for (int col = 0; col < COLS; col++) {
 					if (grid[row][col] == ' ') {
@@ -486,7 +492,7 @@ class tic_tac_toe {
 					else if (input == 'Z' && Fill_Square(2, 0) == true) { break; }
 					else if (input == 'X' && Fill_Square(2, 1) == true) { break; }
 					else if (input == 'C' && Fill_Square(2, 2) == true) { break; }
-					else if (input == '2') { system("cls");  cout << controls_message << endl; system("pause"); break; }
+					else if (input == '2') { system("cls "); cout << controls_message << endl; system("pause"); break; }
 					else if (input == '1') { break; }
 
 					else {
