@@ -303,7 +303,6 @@ class tic_tac_toe {
 			// 0,0 0,1 0,2 
 			// 1,0 1,1 1,2 
 			// 2,0 2,1 2,2 
-			// 
 			// for every colum (top to bottom) check if three characters match 
 			for (int col = 0; col < COLS; col++) {
 				check = ""; // after each column reset the 3 characters
@@ -366,38 +365,22 @@ class tic_tac_toe {
 		// returns the game state (how good a move is) based on recursion of itself reaching a terminal state (10 being good, 0 being okay, -10 being bad)
 		int minimax(bool is_maximising) {
 			// if there is a current winner then terminate the board tree recursion (terminal state)
-			
-			// Print the current board state
-			//cout << "Current board state:" << endl;
-			//for (int i = 0; i < ROWS; i++) {
-			//	for (int j = 0; j < COLS; j++) {
-			//		cout << grid[i][j] << " ";
-			//	}
-			//	cout << endl;
-			//}
-			//cout << "is_maximising " << is_maximising << endl;
-
 			int result = Check_Winner();
 			if (result == 1) {
 				// the AI won so it gets 10 points, points can be more than 10 just as long as its positive
 				return 10;
 			}
 			else if (result == -1){
-				//cout << "human win " << endl;
 				return -10; // human won
 			}
 			else if (result == 3) {
 				// it was a draw so it gets 0 points
-				//cout << "draw" << endl; 
 				return 0;
 			}
-			//cout << "Check_Winner returned: " << result << endl;
-
 
 			int best_score;
 			// here i am recursively checking each possible move in the board given
 			if (is_maximising) {
-				cout << "max" << endl;
 				// the best score for the AI is the highest possible number, we assume it can get a very low score first and compare it
 				best_score = -1000;
 				for (int row = 0; row < ROWS; row++) {
@@ -405,7 +388,6 @@ class tic_tac_toe {
 						// if theres an available move then get the score for the move
 						if (grid[row][col] == ' ') {
 							grid[row][col] = 'X';  
-							//cout << "setting to false " << endl;
 							int score = minimax(false); // minimise next turn for human
 							best_score = max(best_score, score);
 							grid[row][col] = ' '; // undo the move
@@ -415,7 +397,6 @@ class tic_tac_toe {
 
 			}
 			else {
-				//cout << "min" << endl;
 				// the best score for the human is the lowest score of minmax due to it being lowest chance of the AI winning
 				// we assume that the human can have a very high score to compare to get the lowest score
 				best_score = 1000;
@@ -424,7 +405,6 @@ class tic_tac_toe {
 						// if theres an available move then get the score for the move
 						if (grid[row][col] == ' ') {
 							grid[row][col] = 'O';
-							cout << "setting to true " << endl;
 							int score = minimax(true); // maximise next for ai 
 							best_score = min(best_score, score);
 							grid[row][col] = ' '; // undo the move
@@ -455,7 +435,8 @@ class tic_tac_toe {
 						grid[row][col] = ' ';
 
 						if (score > best_score) {
-							move = { row,col };
+							// this move has the best chance of winning for now. 
+							move = { row,col }; 
 							best_score = score;
 						}
 					}
@@ -471,12 +452,9 @@ class tic_tac_toe {
 			if (current_player == 1 && is_against_human == false) {
 				pair<int, int> ai_move = best_move();
 				bool make_move = Fill_Square(ai_move.first, ai_move.second);
-				cout << "(" << ai_move.first << ", " << ai_move.second << ")" << endl;
 				if (make_move == false) {
 					cout << "Minimax algorithm Couldn't determine the right move, it decided (" << ai_move.first << "," << ai_move.second << ")" << endl;
-				}
-				system("pause");
-			}
+				}			}
 			else {
 
 				while (true) { // keep checking input  until its correct 
