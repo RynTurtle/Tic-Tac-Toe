@@ -15,7 +15,6 @@ const int COLS = 3;
 // grid of noughts and crosses 
 char grid[ROWS][COLS];
 int current_player = 1; // 1 or 2 
-int total_squares;
 
 string welcome_message =
 R"(
@@ -172,7 +171,6 @@ class tic_tac_toe {
 
 		void Clear_Grid() {
 			// reset the grid 
-			total_squares = 0;
 			for (int row = 0; row < ROWS; row++) {
 				for (int col = 0; col < COLS; col++) {
 					grid[row][col] = ' ';
@@ -291,43 +289,136 @@ class tic_tac_toe {
 
 			if (current_player == 1) {
 				grid[row][col] = 'X';
-				total_squares += 1;
 			}
 
 			else if (current_player == 2) {
 				grid[row][col] = 'O';
-				total_squares += 1;
 			};
 
 			return true;
 		}
 
-		void Check_Input() {
-			while (true) { // keep checking input  until its correct 
-				cin >> input;
-				input = toupper(input);
 
-				//  checks if the input is a valid move
-				if (input == 'Q' && Fill_Square(0, 0) == true) { break; }
-				else if (input == 'W' && Fill_Square(0, 1) == true) { break; }
-				else if (input == 'E' && Fill_Square(0, 2) == true) { break; }
-				else if (input == 'A' && Fill_Square(1, 0) == true) { break; }
-				else if (input == 'S' && Fill_Square(1, 1) == true) { break; }
-				else if (input == 'D' && Fill_Square(1, 2) == true) { break; }
-				else if (input == 'Z' && Fill_Square(2, 0) == true) { break; }
-				else if (input == 'X' && Fill_Square(2, 1) == true) { break; }
-				else if (input == 'C' && Fill_Square(2, 2) == true) { break; }
-				else if (input == '2') { system("cls");  cout << controls_message << endl; system("pause"); break; }
-				else if (input == '1') { break; }
-
+		// maximiser is the AI - it wants the highest possible score
+		// minimiser is the human - they want to choose the ai's lowest score so they have the higher chances
+		// returns the game state (how good a move is) based on recursion of itself reaching a terminal state (10 being good, 0 being okay, -10 being bad)
+		int minimax(bool is_maximising) {
+			tic_tac_toe tic_tac;
+			// if there is a current winner then terminate the board tree recursion (terminal state)
+			int result = tic_tac.Check_Winner();
+			if (result == 1) {
+				// the AI won so it gets 10 points, points can be more than 10 just as long as its positive
+				if (is_maximising) {
+					return 10;
+				}
 				else {
-					// clear previous attempts, show grid and point user in the right direction 
-					system("cls");
-
-					Display_Grid();
-					cout << "character invalid or invalid placement. \npress 2 to see the controls. \ngameplay will resume on correct move. " << endl;
+					return -10; // human won
 				}
 
+			}
+			else if (result == 3) {
+				// it was a draw so it gets 0 points
+				return 0;
+			}
+
+			int best_score;
+			// here i am recursively checking each possible move in the board given
+			if (is_maximising) {
+				// the best score for the AI is the highest possible number, we assume it can get a very low score first and compare it
+				best_score = -1000;
+				for (int row = 0; row < ROWS; row++) {
+					for (int col = 0; col < COLS; col++) {
+						// if theres an available move then get the score for the move
+						if (grid[row][col] == ' ') {
+							grid[row][col] = 'X';  
+							int score = minimax(false); // get the score for the next move
+							grid[row][col] = ' '; // undo the move
+							best_score = max(best_score, score);
+						}
+					}
+				}
+
+			}
+			else {
+				// the best score for the human is the lowest score of minmax due to it being lowest chance of the AI winning
+				// we assume that the human can have a very high score to compare to get the lowest score
+				best_score = 1000;
+				for (int row = 0; row < ROWS; row++) {
+					for (int col = 0; col < COLS; col++) {
+						// if theres an available move then get the score for the move
+						if (grid[row][col] == ' ') {
+							grid[row][col] = 'O';
+							int score = minimax(true); // get the score for the next move
+							grid[row][col] = ' '; // undo the move
+							best_score = min(best_score, score);
+						}
+					}
+				}
+			}
+			return best_score;
+		}
+
+		pair<int, int> best_move() {
+			pair<int, int> move;
+			int best_score = -1000;
+			for (int row = 0; row < ROWS; row++) {
+				for (int col = 0; col < COLS; col++) {
+					if (grid[row][col] == ' ') {
+						grid[row][col] = 'X';
+						// now i want to see if the move is good 
+						int score = minimax(false);
+						grid[row][col] = ' ';
+
+						if (score > best_score) {
+							move = { row,col };
+							best_score = score;
+						}
+					}
+
+				}
+			}
+			return move;
+		}
+		
+
+		void Check_Input() {
+			// input should be handled by minimax 
+			if (current_player == 1 && is_against_human == false) {
+				pair<int, int> ai_move = best_move();
+				bool make_move = Fill_Square(ai_move.first, ai_move.second);
+				cout << "(" << ai_move.first << ", " << ai_move.second << ")" << endl;
+				if (make_move == false) {
+					cout << "Minimax algorithm Couldn't determine the right move, it decided (" << ai_move.first << "," << ai_move.second << ")" << endl;
+				}
+				system("pause");
+			}
+			else {
+
+				while (true) { // keep checking input  until its correct 
+					cin >> input;
+					input = toupper(input);
+					//  checks if the input is a valid move
+					if (input == 'Q' && Fill_Square(0, 0) == true) { break; }
+					else if (input == 'W' && Fill_Square(0, 1) == true) { break; }
+					else if (input == 'E' && Fill_Square(0, 2) == true) { break; }
+					else if (input == 'A' && Fill_Square(1, 0) == true) { break; }
+					else if (input == 'S' && Fill_Square(1, 1) == true) { break; }
+					else if (input == 'D' && Fill_Square(1, 2) == true) { break; }
+					else if (input == 'Z' && Fill_Square(2, 0) == true) { break; }
+					else if (input == 'X' && Fill_Square(2, 1) == true) { break; }
+					else if (input == 'C' && Fill_Square(2, 2) == true) { break; }
+					else if (input == '2') { system("cls");  cout << controls_message << endl; system("pause"); break; }
+					else if (input == '1') { break; }
+
+					else {
+						// clear previous attempts, show grid and point user in the right direction 
+						system("cls");
+
+						Display_Grid();
+						cout << "character invalid or invalid placement. \npress 2 to see the controls. \ngameplay will resume on correct move. " << endl;
+					}
+
+				}
 			}
 
 		}
@@ -380,10 +471,22 @@ class tic_tac_toe {
 				}
 			}
 
-			if (total_squares == ROWS * COLS) {
+			int board_max = ROWS * COLS;
+			
+			int filled = 0;
+			for (int row = 0; row < ROWS; row++) {
+				for (int col = 0; col < COLS; col++) {
+					if (grid[row][col] != ' ') {
+						filled += 1;
+					}
+				}
+			}
+			if (filled == board_max) {
 				// its a draw!
 				return 3; 
 			}
+
+
 			return 0;
 		}
 
@@ -406,6 +509,9 @@ class tic_tac_toe {
 			return username;
 		}
 
+
+
+
 		int Game_Start() {
 			Clear_Grid();
 			if (is_against_human) {
@@ -415,9 +521,10 @@ class tic_tac_toe {
 				player_usernames[2] = Get_Username();
 			}
 			else {
+				player_usernames[1] = "X-O-Bot";
 				cout << "Whats your username? ";
-				player_usernames[1] = Get_Username();
-				player_usernames[2] = "X-O-Bot";
+				player_usernames[2] = Get_Username();
+
 			}
 
 			do {
@@ -425,6 +532,8 @@ class tic_tac_toe {
 				cout << "    1. back to main menu \n    2. to see controls \n    " + coloured_text("underline","enter controls to start playing \n") << endl;
 				Display_Grid();
 				Check_Input();
+ 
+
 				int win_check = Check_Winner();
 				// win/draw
 				if (win_check != 0) {
@@ -452,7 +561,7 @@ class tic_tac_toe {
 					}
 
 					// play loser sound only if your against the bot and you lost, otherwise there will always be a winner
-					if (is_against_human == false && current_player == 2) { Play_Sound(false); }
+					if (is_against_human == false && current_player == 1) { Play_Sound(false); }
 					else { Play_Sound(true); }
 					// break game loop once a game state has ended 
 					break;
@@ -611,73 +720,4 @@ int main() {
 	Game_menu menu;
 	menu.Menu_Loop();
 
-
- ;
 }
-
-
-
-
-
-
-/*
-
-
-// maximiser is the AI - it wants the highest possible score
-// minimiser is the human - they want to choose the ai's lowest score so they have the higher chances
-// returns the game state (how good a move is) based on recursion of itself reaching a terminal state (10 being good, 0 being okay, -10 being bad)
-int minimax(char grid[ROWS][COLS],bool is_maximising) {
-	tic_tac_toe tic_tac;
-	// if there is a current winner then terminate the board tree recursion (terminal state)
-	int result = tic_tac.check_winner();
-	if (result == 1) {
-		// the AI won so it gets 10 points, points can be more than 10 just as long as its positive
-		if (is_maximising) {
-			return 10;
-		}
-		else {
-			return -10; // human won
-		}
-
-	}
-	else if (result == 3) {
-		// it was a draw so it gets 0 points
-		return 0;
-	}
-
-	int best_score;
-	// here i am recursively checking each possible move in the board given
-	if (is_maximising) {
-		// the best score for the AI is the highest possible number, we assume it can get a very low score first and compare it
-		best_score = -1000;
-		for (int row = 0; row < ROWS; row++) {
-			for (int col = 0; col < COLS; col++) {
-				// if theres an available move then get the score for the move
-				if (grid[row][col] == ' ') {
-					grid[row][col] = 'X';
-					int score = minimax(grid,false); // get the score for the next move
-					grid[row][col] = ' '; // undo the move
-					best_score = max(best_score, score);
-				}
-			}
-		}
-
-	}
-	else {
-		// the best score for the human is the lowest score of minmax due to it being lowest chance of the AI winning
-		// we assume that the human can have a very high score to compare to get the lowest score
-		best_score = 1000;
-		for (int row = 0; row < ROWS; row++) {
-			for (int col = 0; col < COLS; col++) {
-				// if theres an available move then get the score for the move
-				if (grid[row][col] == ' ') {
-					grid[row][col] = 'O';
-					int score = minimax(grid,true); // get the score for the next move
-					grid[row][col] = ' '; // undo the move
-					best_score = min(best_score, score);
-				}
-			}
-		}
-	}
-	return best_scor
-*/
