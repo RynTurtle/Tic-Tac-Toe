@@ -654,7 +654,9 @@ class Game_menu {
 						Sleep(1000);
 					}
 				}
-				cout << coloured_text("purple", "Thats an example of a possible \n" + answer + " line combination") << endl;
+				if (answer == "diagonal" || answer == "vertical" || answer == "horizontal") {
+					cout << coloured_text("purple", "Thats an example of a possible \n" + answer + " line combination") << endl;
+				}
 				cout << "Would you like to quit? (y/n)" << endl;
 				cin >> answer;
 			} while (answer != "y");
