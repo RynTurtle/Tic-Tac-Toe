@@ -4,7 +4,7 @@
 #include <windows.h>
 #include <mmsystem.h>
 #include <fstream>
-#include "include/nlohmann/json.hpp"
+#include "include/nlohmann/json.hpp" // json header file
 
 // link windm .libs for playsound function to work 
 #pragma comment( lib, "winmm" )
@@ -15,6 +15,11 @@ const int COLS = 3;
 // grid of noughts and crosses 
 char grid[ROWS][COLS];
 int current_player = 1; // 1 or 2 
+// music
+// menu https://www.youtube.com/watch?v=u9xSFk1ZDgw
+// winner https://www.youtube.com/watch?v=3GwjfUFyY6M
+// loser https://www.youtube.com/watch?v=NT4S8A7Vcsk
+
 
 string welcome_message =
 R"(
@@ -130,6 +135,21 @@ void change_font_size(int size) {
 	}
 }
 
+void Play_Sound(string file, bool stop_after_key) {
+	string keypress;
+	// playing the sound in async mode so it can also handle input at the same time 
+	PlaySoundA(file.c_str(), NULL, SND_FILENAME | SND_ASYNC | SND_LOOP);
+
+	if (stop_after_key) {
+		// when a the user enters any key it will
+		cout << "Press any key to stop the music and return to the main menu." << endl;
+		cin >> keypress;
+
+		// stop the sound 
+		PlaySound(NULL, 0, 0);
+	}
+}
+
 
 json Read_Stats_File() {
 	// reads the file, if it doesnt exist create it, if it does then return the json object 
@@ -205,28 +225,6 @@ class tic_tac_toe {
 			ofstream file("data.json");
 			file << data.dump(4);
 			file.close();
-		}
-
-		void Play_Sound(bool is_winner) {
-			string file;
-			string keypress;
-			if (is_winner) {
-				cout << coloured_text("green", "Congratulations " + player_usernames[current_player] + ", you have won!!!") << endl;
-				file = "celebration.wav";
-			}
-			else {
-				file = "loludied.wav";
-			}
-
-			// playing the sound in async mode so it can also handle input at the same time 
-			PlaySoundA(file.c_str(), NULL, SND_FILENAME | SND_ASYNC | SND_LOOP);
-
-			// when a the user enters any key it will
-			cout << "Press any key to stop the music and return to the main menu." << endl;
-			cin >> keypress;
-
-			// stop the sound 
-			PlaySound(NULL, 0, 0);
 		}
 
 
@@ -412,7 +410,6 @@ class tic_tac_toe {
 					}
 				}
 			}
-
 			return best_score;
 		}
 
@@ -538,6 +535,8 @@ class tic_tac_toe {
 					Display_Grid();
 					// update stats 
 					if (win_check == 1 || win_check == -1) {
+						cout << coloured_text("green", "Congratulations " + player_usernames[current_player] + ", you have won!!!") << endl;
+
 						if (current_player == 1) {
 							// player 1 wins then player 2 loses 
 							Write_Stats(player_usernames[1], 1, 0, 0);
@@ -558,8 +557,8 @@ class tic_tac_toe {
 					}
 
 					// play loser sound only if your against the bot and you lost, otherwise there will always be a winner
-					if (is_against_human == false && current_player == 1) { Play_Sound(false); }
-					else { Play_Sound(true); }
+					if (is_against_human == false && current_player == 1) { Play_Sound("loludied.wav",true); }
+					else { Play_Sound("celebration.wav",true); }
 					// break game loop once a game state has ended 
 					break;
 				}
@@ -664,6 +663,7 @@ class Game_menu {
 	public:
 		void Menu_Loop() {
 			do {
+				Play_Sound("menu.wav", false);
 				system("cls");
 				cout << welcome_message << endl;
 				cin >> input;
