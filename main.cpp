@@ -172,6 +172,15 @@ json Read_Stats_File() {
 	return data;
 }
 
+// makes sure the length of the word is whats wanted by adding spaces on either side 
+string ensure_length(int characters, string word) {
+	for (int i = 0; i < word.length() - characters; i++) {
+		word += " ";
+	}
+	return word;
+}
+
+
 
 class tic_tac_toe {
 	private:
@@ -234,17 +243,12 @@ class tic_tac_toe {
 			whole_grid += "    XOXOXOXOXOXOXOXOXOXOXOXOXOXOXOXOX\n";
 			whole_grid += "    O+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+O\n    X";
 
-			string player_line = "         Player " + std::to_string(current_player) + ": " + player_usernames[current_player];
+			string player_line = "         Player " + std::to_string(current_player) + ": " + ensure_length(12,player_usernames[current_player]);
 			// changes user colour line based on if they are player 1 or 2 (x or o)
 			if (current_player == 1) {
 				whole_grid += coloured_text("red", player_line);
 			}
 			else { whole_grid += coloured_text("blue", player_line); }
-
-			int spaces_needed = 12 - player_usernames[current_player].length();
-			for (int i = 0; i < spaces_needed; i++) {
-				whole_grid += " ";
-			}
 
 			whole_grid += "X\n";
 			whole_grid += "    O+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+O\n";
@@ -574,13 +578,6 @@ class tic_tac_toe {
 class Game_menu {
 	private:
 		char input;
-		// makes sure the length of the word is whats wanted by adding spaces on either side 
-		string ensure_length(int characters, string word) {
-			for (int i = 0; i < word.length() - characters; i++) {
-				word += " ";
-			}
-			return word;
-		}
 
 		void Display_LeaderBoard() {
 			json data = Read_Stats_File();
