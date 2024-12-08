@@ -190,7 +190,7 @@ json Read_Stats_File() {
 
 // makes sure the length of the word is whats wanted by adding spaces on either side 
 string ensure_length(int characters, string word) {
-	for (int i = 0; i < word.length() - characters; i++) {
+	for (size_t  i = 0; i < word.length() - characters; i++) {
 		word += " ";
 	}
 	return word;
@@ -584,9 +584,12 @@ class tic_tac_toe {
 					system("cls");
 					Display_Grid();
 					// update stats 
-					if (win_check == 1 || win_check == -1) {
-						cout << coloured_text("green", "Congratulations " + player_usernames[current_player] + ", you have won!!!") << endl;
 
+
+					if (win_check != 3) {
+						if (win_check == 1) { cout << coloured_text("red", "Ha " + player_usernames[2] + ", you lost again!!!") << endl; }
+						else if (win_check == -1) {cout << coloured_text("green", "Congratulations " + player_usernames[current_player] + ", you have won!!!") << endl;}
+						
 						if (current_player == 1) {
 							// player 1 wins then player 2 loses 
 							Write_Stats(player_usernames[1], 1, 0, 0);
@@ -597,7 +600,7 @@ class tic_tac_toe {
 							Write_Stats(player_usernames[1], 0, 1, 0);
 						}
 					}
-					else if (win_check == 3) {
+					else {
 						cout << "draw!" << endl;
 						// write draw to both users 
 						Write_Stats(player_usernames[1], 0, 0, 1);
@@ -767,7 +770,8 @@ int main() {
 	std::cout << "\x1b[8;30;42t" << std::endl;
 	// line wrapping 
 	std::cout << "\x1b[?7h";
-	srand(time(0)); // random number generator 
+	// random number generator 
+	srand(time(0)); 
 
 	
 	Game_menu menu;
