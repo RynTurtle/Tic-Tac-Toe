@@ -587,8 +587,8 @@ class tic_tac_toe {
 
 
 					if (win_check != 3) {
-						if (win_check == 1) { cout << coloured_text("red", "Ha " + player_usernames[2] + ", you lost again!!!") << endl; }
-						else if (win_check == -1) {cout << coloured_text("green", "Congratulations " + player_usernames[current_player] + ", you have won!!!") << endl;}
+						if (win_check == 1 && is_against_human == false) { cout << coloured_text("red", "Ha " + player_usernames[2] + ", you lost again!!!") << endl; }
+						else {cout << coloured_text("green", "Congratulations " + player_usernames[current_player] + ", you have won!!!") << endl;}
 						
 						if (current_player == 1) {
 							// player 1 wins then player 2 loses 
