@@ -58,7 +58,7 @@ string bot_message =
 R"(
     XOXOXOXOXOXOXOXOXOXOXOXOXOXOXOXOXO
     O+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-X
-    X          New game              O
+    X       Choose Difficulty        O
     O+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-X
     X       1. Impossible            O
     O       2. Medium                X
@@ -464,7 +464,7 @@ class tic_tac_toe {
 			return move;
 		}
 		
-		void easy_move() {
+		void random_move() {
 			bool make_move;
 			do {
 				// numbers between 0,2
@@ -476,19 +476,32 @@ class tic_tac_toe {
 			}while (make_move != true);
 		}
 
+		void medium_move() {
+			// fills the middle square if its not taken otherwise do a random move
+			if (grid[1][1] == ' ') {
+				cout << "fill middle" << endl;
+				Fill_Square(1, 1);
+			}else{
+				random_move();
+			}
+
+		}
+
 		void Check_Input() {
 			// input should be handled by minimax if the player is the bot 
 			if (current_player == 1 && is_against_human == false) {
 				if (bot_difficulty == "impossible") {
 					pair<int, int> ai_move = best_move();
 					bool make_move = Fill_Square(ai_move.first, ai_move.second);
-
 					if (make_move == false) {
 						cout << "Minimax algorithm Couldn't determine the right move, it decided (" << ai_move.first << "," << ai_move.second << ")" << endl;
 					}
 				}
+				else if (bot_difficulty == "medium") {
+					medium_move();
+				}
 				else if (bot_difficulty == "easy") {
-					easy_move();
+					random_move();
 				}
 			}
 			else {
