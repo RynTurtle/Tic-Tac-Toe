@@ -470,7 +470,6 @@ class tic_tac_toe {
 				// numbers between 0,2
 				int row = rand() % 3;
 				int col = rand() % 3;
-				cout << "making move: row,col: " << row << col << endl;
 				make_move = Fill_Square(row, col);
 				cout << make_move << endl;
 			}while (make_move != true);
@@ -479,7 +478,6 @@ class tic_tac_toe {
 		void medium_move() {
 			// fills the middle square if its not taken otherwise do a random move
 			if (grid[1][1] == ' ') {
-				cout << "fill middle" << endl;
 				Fill_Square(1, 1);
 			}else{
 				random_move();
@@ -738,7 +736,9 @@ class Game_menu {
 						else  if (input == '2') { tic_tac.bot_difficulty = "medium"; }
 						else if (input == '3') { tic_tac.bot_difficulty = "easy"; }
 
-						tic_tac.Game_Start();
+						if (input == '1' || input == '2' || input == '3'){
+							tic_tac.Game_Start();
+						}
 					}
 
 
