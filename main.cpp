@@ -5,11 +5,14 @@
 #include <mmsystem.h>
 #include <fstream>
 #include "include/nlohmann/json.hpp" // json header file
-
+#include <cstdlib> 
+#include <ctime>
 // link windm .libs for playsound function to work 
 #pragma comment( lib, "winmm" )
 using namespace std;
 using json = nlohmann::json;
+
+
 const int ROWS = 3;
 const int COLS = 3;
 // grid of noughts and crosses 
@@ -47,6 +50,19 @@ R"(
     X       1. 2 Players             O
     O       2. Against X-O-Bot       X
     X       3. Return to main menu   O
+    O+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-X
+    XOXOXOXOXOXOXOXOXOXOXOXOXOXOXOXOXO
+)";
+
+string bot_message =
+R"(
+    XOXOXOXOXOXOXOXOXOXOXOXOXOXOXOXOXO
+    O+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-X
+    X          New game              O
+    O+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-X
+    X       1. Impossible            O
+    O       2. Medium                X
+    X       3. Easy                  O
     O+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-X
     XOXOXOXOXOXOXOXOXOXOXOXOXOXOXOXOXO
 )";
@@ -189,6 +205,7 @@ class tic_tac_toe {
 
 	public:
 		bool is_against_human;
+		string bot_difficulty;
 		// map within a map containing the usernames player1:name1, player2:name2
 		std::unordered_map<int, std::string> player_usernames;
 
@@ -447,15 +464,33 @@ class tic_tac_toe {
 			return move;
 		}
 		
+		void easy_move() {
+			bool make_move;
+			do {
+				// numbers between 0,2
+				int row = rand() % 3;
+				int col = rand() % 3;
+				cout << "making move: row,col: " << row << col << endl;
+				make_move = Fill_Square(row, col);
+				cout << make_move << endl;
+			}while (make_move != true);
+		}
 
 		void Check_Input() {
-			// input should be handled by minimax 
+			// input should be handled by minimax if the player is the bot 
 			if (current_player == 1 && is_against_human == false) {
-				pair<int, int> ai_move = best_move();
-				bool make_move = Fill_Square(ai_move.first, ai_move.second);
-				if (make_move == false) {
-					cout << "Minimax algorithm Couldn't determine the right move, it decided (" << ai_move.first << "," << ai_move.second << ")" << endl;
-				}			}
+				if (bot_difficulty == "impossible") {
+					pair<int, int> ai_move = best_move();
+					bool make_move = Fill_Square(ai_move.first, ai_move.second);
+
+					if (make_move == false) {
+						cout << "Minimax algorithm Couldn't determine the right move, it decided (" << ai_move.first << "," << ai_move.second << ")" << endl;
+					}
+				}
+				else if (bot_difficulty == "easy") {
+					easy_move();
+				}
+			}
 			else {
 
 				while (true) { // keep checking input  until its correct 
@@ -681,7 +716,15 @@ class Game_menu {
 						tic_tac.Game_Start();
 					}// AI
 					else if (input == '2') {
+						system("cls");
+						// decide difficulty 
 						tic_tac.is_against_human = false;
+						cout << bot_message << endl;
+						cin >> input;
+						if (input == '1') {tic_tac.bot_difficulty = "impossible";}
+						else  if (input == '2') { tic_tac.bot_difficulty = "medium"; }
+						else if (input == '3') { tic_tac.bot_difficulty = "easy"; }
+
 						tic_tac.Game_Start();
 					}
 
@@ -711,6 +754,7 @@ int main() {
 	std::cout << "\x1b[8;30;42t" << std::endl;
 	// line wrapping 
 	std::cout << "\x1b[?7h";
+	srand(time(0)); // random number generator 
 
 	
 	Game_menu menu;
